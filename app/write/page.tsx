@@ -1,10 +1,11 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import 'highlight.js/styles/github-dark.min.css';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useEditor } from './context';
 
 // 视图模式类型定义
 type ViewMode = 'editor' | 'preview' | 'split';
@@ -44,19 +45,7 @@ const CodeBlock = ({
 
 // 主组件
 const MarkdownEditor: React.FC = () => {
-  // 初始 Markdown 内容
-  const [markdown, setMarkdown] = useState<string>(`# Welcome to React Markdown Demo
-This is a simple demo showing how to use **React Markdown** library in Next.js.
-
-## Features
-- Real-time Markdown preview
-- Code highlighting with line numbers
-- Three view modes: Editor, Preview, Split View
-
-\`\`\`javascript
-// 示例代码
-console.log('Hello, Next.js + React Markdown!');
-\`\`\``);
+  const { content: markdown, setContent } = useEditor();
   
   // 控制当前视图模式
   const [viewMode, setViewMode] = useState<ViewMode>('split');
@@ -65,6 +54,19 @@ console.log('Hello, Next.js + React Markdown!');
   const handleTabChange = (newMode: ViewMode) => {
     setViewMode(newMode);
   };
+
+  // 处理内容变化
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newContent = e.target.value;
+    setContent(newContent);
+  };
+
+  // 设置初始内容
+  useEffect(() => {
+    if (!markdown) {
+      setContent('');
+    }
+  }, []);
 
   const renderMarkdown = () => (
     <div className="prose dark:prose-invert max-w-none">
@@ -85,7 +87,7 @@ console.log('Hello, Next.js + React Markdown!');
           <button
             key={mode}
             className={`px-4 py-2 border rounded ${
-              viewMode === mode ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300'
+              viewMode === mode ? 'bg-sky-700 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300'
             }`}
             onClick={() => handleTabChange(mode as ViewMode)}
           >
@@ -99,8 +101,8 @@ console.log('Hello, Next.js + React Markdown!');
         <textarea
           className="w-full h-64 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen"
           value={markdown}
-          onChange={(e) => setMarkdown(e.target.value)}
-          placeholder="Type your markdown here..."
+          onChange={handleContentChange}
+          placeholder="请输入正文..."
         />
       )}
 
@@ -115,8 +117,8 @@ console.log('Hello, Next.js + React Markdown!');
           <textarea
             className="w-1/2 h-64 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen"
             value={markdown}
-            onChange={(e) => setMarkdown(e.target.value)}
-            placeholder="Type your markdown here..."
+            onChange={handleContentChange}
+            placeholder="请输入正文..."
           />
           <div className="w-1/2 p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600">
             {renderMarkdown()}

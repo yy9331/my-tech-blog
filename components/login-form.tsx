@@ -42,7 +42,7 @@ export default function LoginForm() {
 
   return (
     <div className="bg-gray-800 p-8 rounded-lg shadow-xl">
-      <h2 className="text-2xl font-bold text-emerald-400 mb-6 text-center">管理员登录</h2>
+      <h2 className="text-2xl font-bold text-sky-400 mb-6 text-center">管理员登录</h2>
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
           <input
@@ -50,7 +50,7 @@ export default function LoginForm() {
             placeholder="邮箱"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
             required
           />
         </div>
@@ -60,7 +60,7 @@ export default function LoginForm() {
             placeholder="密码"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
             required
           />
         </div>
@@ -71,7 +71,7 @@ export default function LoginForm() {
         )}
         <Button 
           type="submit" 
-          className="w-full bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+          className="w-full bg-sky-600 hover:bg-sky-500 text-white p-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
           disabled={isLoading}
         >
           {isLoading ? (
