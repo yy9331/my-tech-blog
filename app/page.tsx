@@ -1,8 +1,11 @@
+import PostList from '@/components/post-list';
+
 export default function Home() {
   return (
-    <div className="container mx-auto p-8 h-screen">
-      <h1 className="text-3xl font-bold mb-4">欢迎来到我的技术博客</h1>
-      <p className="text-gray-600">这里是首页内容，你可以在上方导航栏点击“写文章”来发布新内容。</p>
-    </div>
+    <main className="min-h-screen bg-gray-900 pt-[66px]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <PostList />
+      </div>
+    </main>
   );
 }

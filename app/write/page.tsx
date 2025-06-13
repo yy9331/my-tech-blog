@@ -86,6 +86,7 @@ const MarkdownEditor: React.FC = () => {
         {['editor', 'preview', 'split'].map((mode) => (
           <button
             key={mode}
+            type="button"
             className={`px-4 py-2 border rounded ${
               viewMode === mode ? 'bg-sky-700 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300'
             }`}
@@ -96,35 +97,38 @@ const MarkdownEditor: React.FC = () => {
         ))}
       </div>
 
-      {/* 根据视图模式渲染内容 */}
-      {viewMode === 'editor' && (
-        <textarea
-          className="w-full h-64 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen"
-          value={markdown}
-          onChange={handleContentChange}
-          placeholder="请输入正文..."
-        />
-      )}
-
-      {viewMode === 'preview' && (
-        <div className="w-full p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600">
-          {renderMarkdown()}
-        </div>
-      )}
-
-      {viewMode === 'split' && (
-        <div className="flex space-x-4">
+      {/* 编辑器内容区域 */}
+      <div className="bg-gray-800 rounded-lg shadow-xl">
+        {/* 根据视图模式渲染内容 */}
+        {viewMode === 'editor' && (
           <textarea
-            className="w-1/2 h-64 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen"
+            className="w-full h-64 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen"
             value={markdown}
             onChange={handleContentChange}
             placeholder="请输入正文..."
           />
-          <div className="w-1/2 p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600">
+        )}
+
+        {viewMode === 'preview' && (
+          <div className="w-full p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600">
             {renderMarkdown()}
           </div>
-        </div>
-      )}
+        )}
+
+        {viewMode === 'split' && (
+          <div className="flex space-x-4">
+            <textarea
+              className="w-1/2 h-64 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen"
+              value={markdown}
+              onChange={handleContentChange}
+              placeholder="请输入正文..."
+            />
+            <div className="w-1/2 p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600">
+              {renderMarkdown()}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

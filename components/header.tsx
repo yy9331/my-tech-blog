@@ -26,11 +26,11 @@ const Header = () => {
             <Link href="/" className="text-gray-300 hover:text-sky-400 transition-colors">
               首页
             </Link>
-            <Link href="/about" className="text-gray-300 hover:text-sky-400 transition-colors">
-              关于
-            </Link>
             <Link href="/write" className="text-gray-300 hover:text-sky-400 transition-colors">
               写文章
+            </Link>
+            <Link href="/categories" className="text-gray-300 hover:text-sky-400 transition-colors">
+              分类
             </Link>
             {isLoggedIn ? (
               <button
