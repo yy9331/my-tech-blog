@@ -1,12 +1,8 @@
-import type { NextPage } from 'next';
-import MarkdownEditor from '../components/MarkdownEditor';
-
-const Home : NextPage = () => {
+export default function Home() {
   return (
-    <div className="min-h-screen p-8">
-      <h1 className="text-3xl font-bold mb-8">Next.js + React Markdown Demo</h1>
-      <MarkdownEditor />
+    <div className="container mx-auto p-8 h-screen">
+      <h1 className="text-3xl font-bold mb-4">欢迎来到我的技术博客</h1>
+      <p className="text-gray-600">这里是首页内容，你可以在上方导航栏点击“写文章”来发布新内容。</p>
     </div>
   );
 }
-export default Home;
