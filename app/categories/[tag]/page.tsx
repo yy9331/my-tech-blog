@@ -20,7 +20,8 @@ export default function TagPostsPage({ params }: { params: Promise<{ tag: string
   const [error, setError] = useState<string | null>(null);
 
   const resolvedParams = use(params);
-  const tag = resolvedParams.tag;
+  const encodedTag = resolvedParams.tag;
+  const tag = decodeURIComponent(encodedTag);
 
   useEffect(() => {
     const fetchPostsByTag = async () => {
@@ -34,7 +35,7 @@ export default function TagPostsPage({ params }: { params: Promise<{ tag: string
         const { data, error } = await supabase
           .from('Post')
           .select('id, slug, title, content, date, readTime, tags')
-          .ilike('tags', `%${tag}%`) // 使用 ilike 进行模糊匹配，查找包含该标签的文章
+          .contains('tags', [tag]) // 使用 contains 操作符查询数组
           .order('date', { ascending: false });
 
         if (error) throw error;
