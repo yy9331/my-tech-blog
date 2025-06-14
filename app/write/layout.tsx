@@ -1,9 +1,10 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TagsMultiSelect from '@/components/tags-multiselect';
 import { createClient } from '@/lib/supabase/client';
 import { nanoid } from 'nanoid';
 import { EditorProvider, useEditor } from './context';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 type WriteLayoutProps = {
   children: React.ReactElement<React.ComponentProps<any>>;
@@ -19,6 +20,7 @@ const TAG_OPTIONS = [
 ];
 
 const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(true);
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
@@ -28,7 +30,60 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const { content } = useEditor();
+  const [isEditing, setIsEditing] = useState(false);
+  const { content, setContent } = useEditor();
+  const searchParams = useSearchParams();
+  const editSlug = searchParams.get('edit');
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (!editSlug) return;
+
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      console.log('session', session)
+      
+      if (!session) {
+        router.push(`/auth/login?redirect=/write?edit=${editSlug}`);
+        return;
+      }
+    };
+
+    checkAuth();
+  }, [router, editSlug]);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      if (!editSlug) return;
+
+      try {
+        const { data: post, error: fetchError } = await createClient()
+          .from('Post')
+          .select('*')
+          .eq('slug', editSlug)
+          .single();
+
+        if (fetchError) throw fetchError;
+
+        if (post) {
+          setTitle(post.title);
+          setDate(post.date);
+          setAuthor(post.author);
+          setReadTime(post.readTime || '');
+          setTags(post.tags || []);
+          setContent(post.content);
+          setIsEditing(true);
+          setCollapsed(false);
+        }
+      } catch (err) {
+        console.error('Error fetching post:', err);
+        setError('加载文章失败');
+      }
+    };
+
+    fetchPost();
+  }, [editSlug, setContent]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,8 +91,8 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
     setSuccess('');
     setLoading(true);
     try {
-      const slug = nanoid();
-      const { error: insertError } = await createClient().from('Post').insert({
+      const slug = isEditing ? editSlug : nanoid();
+      const { error: insertError } = await createClient().from('Post').upsert({
         slug,
         title,
         date,
@@ -45,11 +100,12 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
         tags,
         content,
         readTime: readTime === '' ? null : readTime,
+      }, {
+        onConflict: 'slug'
       });
 
-      console.log('content', content);
       if (insertError) throw insertError;
-      setSuccess('保存成功！');
+      setSuccess(isEditing ? '更新成功！' : '保存成功！');
     } catch (err: any) {
       setError(err.message || '保存失败');
     } finally {
@@ -68,7 +124,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
               onClick={e => { e.preventDefault(); setCollapsed((c) => !c); }}
               type="button"
             >
-              <span>文章信息设置</span>
+              <span>{isEditing ? '编辑文章信息' : '文章信息设置'}</span>
               <svg
                 className={`w-5 h-5 transform transition-transform ${collapsed ? '' : 'rotate-180'}`}
                 fill="none"
