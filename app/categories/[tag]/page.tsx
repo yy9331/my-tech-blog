@@ -83,7 +83,7 @@ export default function TagPostsPage({ params }: { params: Promise<{ tag: string
         <h1 className="text-3xl font-bold mb-8 text-white mt-4">标签: {tag}</h1>
         
         {posts.length === 0 ? (
-          <p className="text-gray-400">暂无标签为 "{tag}" 的文章。</p>
+          <p className="text-gray-400">暂无标签为 &quot;{tag}&quot; 的文章。</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (
