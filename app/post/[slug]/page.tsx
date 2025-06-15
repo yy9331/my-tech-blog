@@ -37,9 +37,15 @@ const CodeBlock = ({
   const language = match ? match[1] : '';
 
   if (inline) {
-    return <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">{children}</code>;
+    // 行内代码：只渲染 <code>
+    return (
+      <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">
+        {children}
+      </code>
+    );
   }
 
+  // 代码块：用高亮
   return (
     <SyntaxHighlighter
       language={language}
@@ -263,4 +269,4 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
       </div>
     </div>
   );
-} 
+}

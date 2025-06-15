@@ -5,9 +5,10 @@ interface TagsMultiSelectProps {
   value: string[];
   onChange: (tags: string[]) => void;
   placeholder?: string;
+  onNewTagCreated?: (newTag: string) => void;
 }
 
-export default function TagsMultiSelect({ options, value, onChange, placeholder }: TagsMultiSelectProps) {
+export default function TagsMultiSelect({ options, value, onChange, placeholder, onNewTagCreated }: TagsMultiSelectProps) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,6 +28,21 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder 
   const filteredOptions = options.filter(
     (tag) => tag.toLowerCase().includes(input.toLowerCase()) && !value.includes(tag)
   );
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && input.trim() !== '') {
+      e.preventDefault();
+      const newTag = input.trim();
+      if (!value.includes(newTag)) {
+        onChange([...value, newTag]);
+        if (onNewTagCreated) {
+          onNewTagCreated(newTag);
+        }
+      }
+      setInput('');
+      setOpen(false);
+    }
+  };
 
   return (
     <div ref={containerRef} className="relative w-full">
@@ -57,6 +73,7 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder 
           value={input}
           onChange={e => setInput(e.target.value)}
           onFocus={() => setOpen(true)}
+          onKeyDown={handleInputKeyDown}
           placeholder={placeholder || '请选择/输入标签'}
         />
       </div>

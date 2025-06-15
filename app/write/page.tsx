@@ -11,34 +11,28 @@ import { useEditor } from './context';
 type ViewMode = 'editor' | 'preview' | 'split';
 
 // 自定义代码块渲染器，用于代码高亮
-const CodeBlock = ({ 
-  inline, 
-  className, 
-  children 
-}: {
-  inline?: boolean;
+const CodeBlock = ({ className, children }: {
   className?: string;
   children: React.ReactNode;
 }) => {
   const match = /language-(\w+)/.exec(className || '');
   const language = match ? match[1] : '';
 
-  if (inline) {
-    return <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">{children}</code>;
-  }
-
+  const codeContent = String(children || '').replace(/\n$/, '');
+  console.log(codeContent)
   return (
     <SyntaxHighlighter
       language={language}
       style={vscDarkPlus}
       showLineNumbers={true}
       customStyle={{
-        margin: '1em 0',
+        margin: 0,
         borderRadius: '0.5rem',
         padding: '1em',
+        background: 'none',
       }}
     >
-      {String(children).replace(/\n$/, '')}
+      {codeContent}
     </SyntaxHighlighter>
   );
 };

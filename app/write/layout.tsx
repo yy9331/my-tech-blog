@@ -10,15 +10,6 @@ type WriteLayoutProps = {
   children: React.ReactElement<React.ComponentProps<any>>;
 }
 
-const TAG_OPTIONS = [
-  '前端',
-  '后端',
-  'AI',
-  '随笔',
-  '工具',
-  '生活',
-];
-
 const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(true);
@@ -31,9 +22,29 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [newlyCreatedTags, setNewlyCreatedTags] = useState<string[]>([]);
   const { content, setContent } = useEditor();
   const searchParams = useSearchParams();
   const editSlug = searchParams.get('edit');
+
+  useEffect(() => {
+    const fetchInitialTags = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('Tags')
+        .select('name')
+        .order('name', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching initial tags:', error);
+        throw error;
+      }
+      setAvailableTags(data.map(item => item.name));
+    };
+
+    fetchInitialTags();
+  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -41,8 +52,6 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
 
       const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
-
-      console.log('session', session)
       
       if (!session) {
         router.push(`/auth/login?redirect=/write?edit=${editSlug}`);
@@ -85,14 +94,35 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
     fetchPost();
   }, [editSlug, setContent]);
 
+  const handleNewTagCreated = (newTag: string) => {
+    if (!availableTags.includes(newTag)) {
+      setAvailableTags(prev => [...prev, newTag].sort());
+    }
+    if (!newlyCreatedTags.includes(newTag)) {
+      setNewlyCreatedTags(prev => [...prev, newTag]);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
     setLoading(true);
+
     try {
+      if (newlyCreatedTags.length > 0) {
+        const tagsToInsert = newlyCreatedTags.map(tag => ({ name: tag }));
+        const { error: insertTagsError } = await createClient()
+          .from('Tags')
+          .upsert(tagsToInsert, { onConflict: 'name', ignoreDuplicates: true });
+        
+        if (insertTagsError) {
+          console.error('Error inserting new tags:', insertTagsError);
+        }
+      }
+
       const slug = isEditing ? editSlug : nanoid();
-      const { error: insertError } = await createClient().from('Post').upsert({
+      const { error: insertPostError } = await createClient().from('Post').upsert({
         slug,
         title,
         date,
@@ -104,8 +134,9 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
         onConflict: 'slug'
       });
 
-      if (insertError) throw insertError;
+      if (insertPostError) throw insertPostError;
       setSuccess(isEditing ? '更新成功！' : '保存成功！');
+      setNewlyCreatedTags([]);
     } catch (err: any) {
       setError(err.message || '保存失败');
     } finally {
@@ -183,9 +214,10 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
                   <div className="md:col-span-2">
                     <label className="block text-gray-300 mb-1">标签</label>
                     <TagsMultiSelect
-                      options={TAG_OPTIONS}
+                      options={availableTags}
                       value={tags}
                       onChange={setTags}
+                      onNewTagCreated={handleNewTagCreated}
                       placeholder="请选择或输入标签"
                     />
                     <div className="mt-2 text-sm text-sky-400">可多选，输入或选择后回车/点击添加</div>
