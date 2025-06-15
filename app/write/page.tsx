@@ -19,7 +19,6 @@ const CodeBlock = ({ className, children }: {
   const language = match ? match[1] : '';
 
   const codeContent = String(children || '').replace(/\n$/, '');
-  console.log(codeContent)
   return (
     <SyntaxHighlighter
       language={language}
