@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import TagsMultiSelect from '@/components/tags-multiselect';
 import { createClient } from '@/lib/supabase/client';
 import { nanoid } from 'nanoid';
@@ -229,8 +229,14 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
   );
 }
 
-const WriteLayout = ({ children }: WriteLayoutProps) => <EditorProvider>
-    <WriteLayoutContent>{children}</WriteLayoutContent>
-</EditorProvider>;
+const WriteLayout = ({ children }: WriteLayoutProps) => (
+  <EditorProvider>
+    <Suspense fallback={<div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="text-sky-400 text-xl">加载中...</div>
+    </div>}>
+      <WriteLayoutContent>{children}</WriteLayoutContent>
+    </Suspense>
+  </EditorProvider>
+);
 
 export default WriteLayout;

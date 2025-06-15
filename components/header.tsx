@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { createClient } from '@/lib/supabase/client';
@@ -20,10 +21,12 @@ const Header = () => {
       <div className="container mx-auto px-6 py-4">
         <nav className="flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold text-sky-400 hover:text-sky-300 transition-colors">
-            <img
+            <Image
               src="https://oikbmogyevlxggbzfpnp.supabase.co/storage/v1/object/sign/imgs/logo-cube-horizon.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8xMjQxNTU4Ny05NWFmLTRlY2EtODYzYS1mOGVhMTYyNGM2NDYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWdzL2xvZ28tY3ViZS1ob3Jpem9uLnBuZyIsImlhdCI6MTc0OTk2NzI3NiwiZXhwIjoyNjEzODgwODc2fQ.V1dIV3ZBMsk_L76pFHi-brKlr4ViRIkq9KH9awGXijc"
               alt="logo"
               width={141}
+              height={40}
+              priority
               style={{ display: 'block' }}
             />
           </Link>
