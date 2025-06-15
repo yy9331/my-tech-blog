@@ -7,10 +7,10 @@ import { EditorProvider, useEditor } from './context';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 type WriteLayoutProps = {
-  children: React.ReactElement<React.ComponentProps<any>>;
+  children: React.ReactElement;
 }
 
-const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
+const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(true);
   const [title, setTitle] = useState('');
@@ -18,9 +18,6 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const [author, setAuthor] = useState('');
   const [readTime, setReadTime] = useState<number | ''>('');
   const [tags, setTags] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [newlyCreatedTags, setNewlyCreatedTags] = useState<string[]>([]);
@@ -87,7 +84,6 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (err) {
         console.error('Error fetching post:', err);
-        setError('加载文章失败');
       }
     };
 
@@ -105,9 +101,6 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-    setLoading(true);
 
     try {
       if (newlyCreatedTags.length > 0) {
@@ -135,12 +128,12 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
       });
 
       if (insertPostError) throw insertPostError;
-      setSuccess(isEditing ? '更新成功！' : '保存成功！');
-      setNewlyCreatedTags([]);
-    } catch (err: any) {
-      setError(err.message || '保存失败');
-    } finally {
-      setLoading(false);
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'message' in err) {
+        console.error('Error saving post:', (err as { message?: string }).message || '保存失败');
+      } else {
+        console.error('Error saving post:', '保存失败');
+      }
     }
   };
 
@@ -230,18 +223,6 @@ const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
           <div className="bg-gray-800 rounded-lg shadow-xl">
             {children}
           </div>
-          {/* 保存按钮和提示 */}
-          <div className="flex justify-end mt-8">
-            <button
-              type="submit"
-              className="px-6 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold transition-colors disabled:opacity-60"
-              disabled={loading}
-            >
-              {loading ? '保存中...' : '保存'}
-            </button>
-          </div>
-          {error && <div className="mt-4 text-red-400 text-center">{error}</div>}
-          {success && <div className="mt-4 text-sky-400 text-center">{success}</div>}
         </form>
       </div>
     </div>

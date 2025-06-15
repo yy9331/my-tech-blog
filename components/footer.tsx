@@ -20,13 +20,13 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/write" className="hover:text-sky-400 transition-colors">
-                  写文章
+                <Link href="/categories" className="hover:text-sky-400 transition-colors">
+                  分类
                 </Link>
               </li>
               <li>
-                <Link href="/categories" className="hover:text-sky-400 transition-colors">
-                  分类
+                <Link href="/write" className="hover:text-sky-400 transition-colors">
+                  写文章
                 </Link>
               </li>
             </ul>

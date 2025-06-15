@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { Components }  from 'react-markdown';
 import 'highlight.js/styles/github-dark.min.css';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -42,6 +42,9 @@ const MarkdownEditor: React.FC = () => {
   
   // 控制当前视图模式
   const [viewMode, setViewMode] = useState<ViewMode>('split');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // 处理 Tab 切换
   const handleTabChange = (newMode: ViewMode) => {
@@ -61,10 +64,25 @@ const MarkdownEditor: React.FC = () => {
     }
   }, []);
 
+  // 处理保存按钮点击
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      // 这里添加保存逻辑
+      setSuccess('保存成功！');
+      setTimeout(() => setSuccess(''), 4000);
+    } catch (err) {
+      setError('保存失败');
+      setTimeout(() => setError(''), 4000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderMarkdown = () => (
     <div className="prose dark:prose-invert max-w-none">
       <ReactMarkdown
-        components={{ code: CodeBlock as any }}
+        components={{ code: CodeBlock as Components['code'] }}
         remarkPlugins={[remarkGfm]}
       >
         {markdown}
@@ -74,20 +92,33 @@ const MarkdownEditor: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      {/* Tab 切换栏 */}
-      <div className="flex space-x-4 mb-4">
-        {['editor', 'preview', 'split'].map((mode) => (
+      {/* Tab 切换栏和保存按钮 */}
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex space-x-4">
+          {['editor', 'preview', 'split'].map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              className={`px-4 py-2 border rounded ${
+                viewMode === mode ? 'bg-sky-700 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300'
+              }`}
+              onClick={() => handleTabChange(mode as ViewMode)}
+            >
+              {mode.charAt(0).toUpperCase() + mode.slice(1)}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center space-x-4">
+          {error && <div className="text-red-400">{error}</div>}
+          {success && <div className="text-sky-400">{success}</div>}
           <button
-            key={mode}
-            type="button"
-            className={`px-4 py-2 border rounded ${
-              viewMode === mode ? 'bg-sky-700 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300'
-            }`}
-            onClick={() => handleTabChange(mode as ViewMode)}
+            onClick={handleSave}
+            className="px-6 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold transition-colors disabled:opacity-60"
+            disabled={loading}
           >
-            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+            {loading ? '保存中...' : '保存'}
           </button>
-        ))}
+        </div>
       </div>
 
       {/* 编辑器内容区域 */}

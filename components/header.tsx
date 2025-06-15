@@ -23,6 +23,7 @@ const Header = () => {
             <img
               src="https://oikbmogyevlxggbzfpnp.supabase.co/storage/v1/object/sign/imgs/logo-cube-horizon.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8xMjQxNTU4Ny05NWFmLTRlY2EtODYzYS1mOGVhMTYyNGM2NDYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWdzL2xvZ28tY3ViZS1ob3Jpem9uLnBuZyIsImlhdCI6MTc0OTk2NzI3NiwiZXhwIjoyNjEzODgwODc2fQ.V1dIV3ZBMsk_L76pFHi-brKlr4ViRIkq9KH9awGXijc"
               alt="logo"
+              width={141}
               style={{ display: 'block' }}
             />
           </Link>
@@ -30,11 +31,11 @@ const Header = () => {
             <Link href="/" className="text-gray-300 hover:text-sky-400 transition-colors">
               首页
             </Link>
-            <Link href="/write" className="text-gray-300 hover:text-sky-400 transition-colors">
-              写文章
-            </Link>
             <Link href="/categories" className="text-gray-300 hover:text-sky-400 transition-colors">
               分类
+            </Link>
+            <Link href="/write" className="text-gray-300 hover:text-sky-400 transition-colors">
+              写文章
             </Link>
             {isLoggedIn ? (
               <button
