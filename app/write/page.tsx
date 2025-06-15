@@ -62,7 +62,7 @@ const MarkdownEditor: React.FC = () => {
     if (!markdown) {
       setContent('');
     }
-  }, []);
+  }, [markdown, setContent]);
 
   // 处理保存按钮点击
   const handleSave = async () => {
@@ -71,7 +71,7 @@ const MarkdownEditor: React.FC = () => {
       // 这里添加保存逻辑
       setSuccess('保存成功！');
       setTimeout(() => setSuccess(''), 4000);
-    } catch (err) {
+    } catch {
       setError('保存失败');
       setTimeout(() => setError(''), 4000);
     } finally {
