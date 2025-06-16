@@ -70,6 +70,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const resolvedParams = use(params);
   const slug = resolvedParams.slug;
@@ -149,6 +150,13 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
     fetchPost();
   }, [slug]);
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex justify-center items-center">
@@ -192,15 +200,32 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
                 {post.title}
               </h1>
               {isAuthorized && (
-                <Link
-                  href={`/write?edit=${post.slug}`}
-                  className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  编辑该文章
-                </Link>
+                <>
+                  {/* 桌面端：原按钮 */}
+                  {!isMobile && (
+                    <Link
+                      href={`/write?edit=${post.slug}`}
+                      className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors flex items-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      编辑该文章
+                    </Link>
+                  )}
+                  {/* 移动端：仅边框图标 */}
+                  {isMobile && (
+                    <Link
+                      href={`/write?edit=${post.slug}`}
+                      className="w-10 h-10 flex items-center justify-center border-2 border-sky-600 rounded-lg hover:bg-sky-900 transition-colors"
+                      aria-label="编辑该文章"
+                    >
+                      <svg className="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </Link>
+                  )}
+                </>
               )}
             </div>
             <div className="flex items-center gap-4 text-gray-300">

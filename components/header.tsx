@@ -4,16 +4,24 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { createClient } from '@/lib/supabase/client';
+import { useState } from 'react';
 
 const Header = () => {
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
     setIsLoggedIn(false);
     router.push('/');
+  };
+
+  // 移动端菜单项点击后关闭菜单
+  const handleMenuClick = (href: string) => {
+    setMenuOpen(false);
+    router.push(href);
   };
 
   return (
@@ -30,7 +38,8 @@ const Header = () => {
               style={{ display: 'block' }}
             />
           </Link>
-          <div className="flex items-center space-x-6">
+          {/* 桌面端菜单 */}
+          <div className="hidden md:flex items-center space-x-6">
             <Link href="/" className="text-gray-300 hover:text-sky-400 transition-colors">
               首页
             </Link>
@@ -43,7 +52,7 @@ const Header = () => {
             {isLoggedIn ? (
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-500 transition-colors"
+                className="px-4 py-2 bg-transparent border border-white text-white rounded-md hover:bg-white hover:text-sky-700 transition-colors"
               >
                 登出
               </button>
@@ -56,8 +65,34 @@ const Header = () => {
               </Link>
             )}
           </div>
+          {/* 移动端三明治按钮 */}
+          <button className="md:hidden flex flex-col justify-center items-center w-10 h-10" onClick={() => setMenuOpen(true)} aria-label="打开菜单">
+            <span className="block w-6 h-0.5 bg-white mb-1"></span>
+            <span className="block w-6 h-0.5 bg-white mb-1"></span>
+            <span className="block w-6 h-0.5 bg-white"></span>
+          </button>
         </nav>
       </div>
+      {/* 移动端全屏菜单 */}
+      {menuOpen && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex flex-col items-center justify-center md:hidden">
+          <button className="absolute top-6 right-6 text-white text-3xl" onClick={() => setMenuOpen(false)} aria-label="关闭菜单">×</button>
+          <button className="w-3/4 py-4 text-2xl text-white font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/')}>首页</button>
+          <button className="w-3/4 py-4 text-2xl text-white font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/categories')}>分类</button>
+          <button className="w-3/4 py-4 text-2xl text-white font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>写文章</button>
+          {isLoggedIn ? (
+            <button
+              onClick={() => { setMenuOpen(false); handleLogout(); }}
+              className="w-3/4 py-3 text-lg text-white rounded-lg bg-transparent border border-white hover:bg-white hover:text-sky-700"
+            >登出</button>
+          ) : (
+            <button
+              onClick={() => handleMenuClick('auth/login')}
+              className="w-3/4 py-3 text-lg text-white rounded-lg bg-sky-600 hover:bg-sky-500"
+            >登录</button>
+          )}
+        </div>
+      )}
     </header>
   );
 };
