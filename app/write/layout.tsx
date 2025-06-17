@@ -45,17 +45,18 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (!editSlug) return;
-
       const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        router.push(`/auth/login?redirect=/write?edit=${editSlug}`);
+        if (editSlug) {
+          router.push(`/auth/login?redirect=/write?edit=${editSlug}`);
+        } else {
+          router.push(`/auth/login?redirect=/write`);
+        }
         return;
       }
     };
-
     checkAuth();
   }, [router, editSlug]);
 
