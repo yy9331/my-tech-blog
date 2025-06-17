@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/lib/auth-context';
+import { FaGithub } from 'react-icons/fa';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -39,6 +40,20 @@ export default function LoginForm() {
       setIsLoading(false);
     }
   }
+
+  // GitHub 登录
+  const handleGitHubLogin = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      const { error } = await createClient().auth.signInWithOAuth({ provider: 'github' });
+      if (error) setError(error.message);
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="bg-gray-800 p-8 rounded-lg shadow-xl">
@@ -87,6 +102,20 @@ export default function LoginForm() {
           )}
         </Button>
       </form>
+      <div className="my-6 flex items-center">
+        <div className="flex-1 h-px bg-gray-700" />
+        <span className="mx-4 text-gray-400 text-sm">或</span>
+        <div className="flex-1 h-px bg-gray-700" />
+      </div>
+      <Button
+        type="button"
+        onClick={handleGitHubLogin}
+        className="w-full bg-gray-900 hover:bg-gray-700 text-white p-3 rounded-lg font-medium flex items-center justify-center gap-2 border border-gray-700"
+        disabled={isLoading}
+      >
+        <FaGithub className="w-5 h-5" />
+        使用 GitHub 登录
+      </Button>
     </div>
   )
 }
