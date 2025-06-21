@@ -200,41 +200,43 @@ const MarkdownEditor: React.FC = () => {
                 onChange={handleContentChange}
                 placeholder="请输入正文..."
               />
-              <div className="w-full p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600">
+              <div className="w-full p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 h-48 overflow-y-auto">
                 {renderMarkdown()}
               </div>
-              {/* 预览全屏弹窗 */}
-              {previewFull && (
-                <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex flex-col">
-                  <div className="flex justify-end p-4">
-                    <button
-                      className="px-4 py-2 bg-white text-sky-700 rounded shadow font-semibold"
-                      onClick={() => setPreviewFull(false)}
-                    >关闭预览</button>
-                  </div>
-                  <div className="flex-1 overflow-y-auto p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg max-w-2xl mx-auto">
-                      {renderMarkdown()}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           ) : (
-            <div className="flex space-x-4">
+            <div className="grid grid-cols-2 gap-4">
               <textarea
-                className="w-1/2 h-64 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen"
+                className="w-full p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen"
                 value={markdown}
                 onChange={handleContentChange}
                 placeholder="请输入正文..."
               />
-              <div className="w-1/2 p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600">
+              <div className="p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen overflow-y-auto">
                 {renderMarkdown()}
               </div>
             </div>
           )
         )}
       </div>
+
+      {/* 移动端全屏预览 */}
+      {previewFull && (
+        <div className="fixed inset-0 bg-white dark:bg-gray-900 z-50 overflow-y-auto">
+          <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">预览</h2>
+            <button
+              onClick={() => setPreviewFull(false)}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            >
+              关闭
+            </button>
+          </div>
+          <div className="p-4">
+            {renderMarkdown()}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
