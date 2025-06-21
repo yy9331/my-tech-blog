@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useState } from 'react';
 
 const Header = () => {
-  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const { isLoggedIn, setIsLoggedIn, userEmail, userName, userAvatar } = useAuth();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -23,6 +23,44 @@ const Header = () => {
     setMenuOpen(false);
     router.push(href);
   };
+
+  // 用户信息组件
+  const UserInfo = () => (
+    <div className="flex items-center space-x-3">
+      {/* 用户头像 */}
+      {userAvatar ? (
+        <Image
+          src={userAvatar}
+          alt="用户头像"
+          width={32}
+          height={32}
+          className="rounded-full"
+        />
+      ) : (
+        <div className="w-8 h-8 bg-sky-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+          {userName ? userName.charAt(0).toUpperCase() : userEmail ? userEmail.charAt(0).toUpperCase() : 'U'}
+        </div>
+      )}
+      {/* 用户信息 */}
+      <div className="hidden sm:block text-left">
+        <div className="text-white text-sm font-medium">
+          {userName || userEmail}
+        </div>
+        {userName && userEmail && (
+          <div className="text-gray-300 text-xs">
+            {userEmail}
+          </div>
+        )}
+      </div>
+      {/* 登出按钮 */}
+      <button
+        onClick={handleLogout}
+        className="px-3 py-1.5 bg-transparent border border-white text-white text-sm rounded-md hover:bg-white hover:text-sky-700 transition-colors"
+      >
+        登出
+      </button>
+    </div>
+  );
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-gray-800 shadow-lg z-50">
@@ -50,12 +88,7 @@ const Header = () => {
               写文章
             </Link>
             {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-transparent border border-white text-white rounded-md hover:bg-white hover:text-sky-700 transition-colors"
-              >
-                登出
-              </button>
+              <UserInfo />
             ) : (
               <Link
                 href="auth/login"
@@ -81,10 +114,38 @@ const Header = () => {
           <button className="w-3/4 py-4 text-2xl text-white font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/categories')}>分类</button>
           <button className="w-3/4 py-4 text-2xl text-white font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>写文章</button>
           {isLoggedIn ? (
-            <button
-              onClick={() => { setMenuOpen(false); handleLogout(); }}
-              className="w-3/4 py-3 text-lg text-white rounded-lg bg-transparent border border-white hover:bg-white hover:text-sky-700"
-            >登出</button>
+            <div className="w-3/4 flex flex-col items-center space-y-4">
+              {/* 移动端用户信息 */}
+              <div className="flex items-center space-x-3 mb-4">
+                {userAvatar ? (
+                  <Image
+                    src={userAvatar}
+                    alt="用户头像"
+                    width={48}
+                    height={48}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white text-lg font-medium">
+                    {userName ? userName.charAt(0).toUpperCase() : userEmail ? userEmail.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                )}
+                <div className="text-left">
+                  <div className="text-white text-lg font-medium">
+                    {userName || userEmail}
+                  </div>
+                  {userName && userEmail && (
+                    <div className="text-gray-300 text-sm">
+                      {userEmail}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => { setMenuOpen(false); handleLogout(); }}
+                className="w-full py-3 text-lg text-white rounded-lg bg-transparent border border-white hover:bg-white hover:text-sky-700"
+              >登出</button>
+            </div>
           ) : (
             <button
               onClick={() => handleMenuClick('auth/login')}
