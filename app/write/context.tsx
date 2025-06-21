@@ -5,10 +5,6 @@ type EditorContextType = {
   setContent: (content: string) => void;
   isSaving: boolean;
   setIsSaving: (isSaving: boolean) => void;
-  saveSuccess: string | null;
-  setSaveSuccess: (message: string | null) => void;
-  saveError: string | null;
-  setSaveError: (message: string | null) => void;
 };
 
 const EditorContext = createContext<EditorContextType | undefined>(undefined);
@@ -24,11 +20,9 @@ export const useEditor = () => {
 export const EditorProvider = ({ children }: { children: React.ReactNode }) => {
   const [content, setContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
-  const [saveError, setSaveError] = useState<string | null>(null);
 
   return (
-    <EditorContext.Provider value={{ content, setContent, isSaving, setIsSaving, saveSuccess, setSaveSuccess, saveError, setSaveError }}>
+    <EditorContext.Provider value={{ content, setContent, isSaving, setIsSaving }}>
       {children}
     </EditorContext.Provider>
   );

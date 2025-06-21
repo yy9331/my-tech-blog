@@ -6,6 +6,7 @@ import { nanoid } from 'nanoid';
 import { EditorProvider, useEditor } from './context';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ImageUploader from '@/components/image-uploader';
+import { useToast } from '@/components/toast/toast-context';
 
 type WriteLayoutProps = {
   children: React.ReactElement;
@@ -23,7 +24,8 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [newlyCreatedTags, setNewlyCreatedTags] = useState<string[]>([]);
   const [tagsLoading, setTagsLoading] = useState(false);
-  const { content, setContent, setIsSaving, setSaveSuccess, setSaveError } = useEditor();
+  const { content, setContent, setIsSaving } = useEditor();
+  const { showToast } = useToast();
   const searchParams = useSearchParams();
   const editSlug = searchParams.get('edit');
 
@@ -145,8 +147,6 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    setSaveSuccess(null);
-    setSaveError(null);
 
     const supabase = createClient();
     const { data: { session } } = await supabase.auth.getSession();
@@ -189,7 +189,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
       if (insertPostError) throw insertPostError;
       
       localStorage.removeItem('unsavedPost');
-      setSaveSuccess('文章保存成功！');
+      showToast('文章保存成功！', 'success');
 
     } catch (err: unknown) {
       const errorMessage = '保存失败，请检查网络或联系管理员。';
@@ -198,7 +198,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
       } else {
         console.error('Error saving post:', errorMessage);
       }
-      setSaveError(errorMessage);
+      showToast(errorMessage, 'error');
     } finally {
       setIsSaving(false);
     }

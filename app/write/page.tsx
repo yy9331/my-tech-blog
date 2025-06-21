@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useEditor } from './context';
+import ImagePreview from '@/components/ui/image-preview';
 
 // -- Custom Hook for Save Shortcut --
 const useSaveShortcut = (formRef: React.RefObject<HTMLDivElement | null>) => {
@@ -61,51 +62,16 @@ const CodeBlock = ({ className, children }: {
 
 // 主组件
 const MarkdownEditor: React.FC = () => {
-  const { 
-    content: markdown, 
-    setContent, 
-    isSaving, 
-    saveSuccess, 
-    saveError,
-    setSaveSuccess,
-    setSaveError
-  } = useEditor();
+  const { content: markdown, setContent, isSaving } = useEditor();
   const containerRef = useRef<HTMLDivElement>(null);
   
   const [viewMode, setViewMode] = useState<ViewMode>('split');
   const [isMobile, setIsMobile] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [previewFull, setPreviewFull] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   
   // 使用自定义 hook
   useSaveShortcut(containerRef);
-
-  // 当保存成功或失败时，显示提示
-  useEffect(() => {
-    if (saveSuccess) {
-      if (isMobile) {
-        setToast({ type: 'success', message: saveSuccess });
-        setSaveSuccess(null); // 移动端立即清除，由 Toast 组件管理显示
-      } else {
-        // 桌面端，延迟清除以显示提示信息
-        const timer = setTimeout(() => setSaveSuccess(null), 4000);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [saveSuccess, isMobile, setSaveSuccess]);
-
-  useEffect(() => {
-    if (saveError) {
-      if (isMobile) {
-        setToast({ type: 'error', message: saveError });
-        setSaveError(null); // 移动端立即清除
-      } else {
-        // 桌面端，延迟清除
-        const timer = setTimeout(() => setSaveError(null), 4000);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [saveError, isMobile, setSaveError]);
 
   // 处理 Tab 切换
   const handleTabChange = (newMode: ViewMode) => {
@@ -132,10 +98,30 @@ const MarkdownEditor: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  const ImageRenderer: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = ({ src, alt }) => {
+    const handleClick = () => {
+      if (typeof src === 'string') {
+        setPreviewImageUrl(src);
+      }
+    };
+
+    if (!src) return null;
+    
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img 
+        src={src} 
+        alt={alt} 
+        onClick={handleClick}
+        className="cursor-pointer"
+      />
+    );
+  };
+
   const renderMarkdown = () => (
     <div className="prose dark:prose-invert max-w-none">
       <ReactMarkdown
-        components={{ code: CodeBlock as Components['code'] }}
+        components={{ code: CodeBlock as Components['code'], img: ImageRenderer }}
         remarkPlugins={[remarkGfm]}
       >
         {markdown}
@@ -145,18 +131,6 @@ const MarkdownEditor: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4" ref={containerRef}>
-      {/* 移动端 Toast 提示 */}
-      {isMobile && toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border border-gray-200 bg-white text-gray-900 min-w-[200px] max-w-[90vw]" style={{boxShadow:'0 2px 8px rgba(0,0,0,0.12)'}}>
-          {toast.type === 'success' ? (
-            <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="white"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4" stroke="green"/></svg>
-          ) : (
-            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="white"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 9l-6 6m0-6l6 6" stroke="red"/></svg>
-          )}
-          <span className="text-base font-medium">{toast.message}</span>
-        </div>
-      )}
-      {/* Tab 切换栏和保存按钮 */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex space-x-4">
           {['editor', 'preview', 'split'].map((mode) => (
@@ -172,11 +146,8 @@ const MarkdownEditor: React.FC = () => {
             </button>
           ))}
         </div>
-        {/* 桌面端保存按钮 */}
         {!isMobile && (
           <div className="flex items-center space-x-4">
-            {saveError && <div className="text-red-400">{saveError}</div>}
-            {saveSuccess && <div className="text-sky-400">{saveSuccess}</div>}
             <button
               type="submit"
               className="px-6 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold transition-colors disabled:opacity-60"
@@ -187,7 +158,6 @@ const MarkdownEditor: React.FC = () => {
           </div>
         )}
       </div>
-      {/* 移动端悬浮保存按钮 */}
       {isMobile && (
         <button
           type="submit"
@@ -253,7 +223,6 @@ const MarkdownEditor: React.FC = () => {
         )}
       </div>
 
-      {/* 移动端全屏预览 */}
       {previewFull && (
         <div className="fixed inset-0 bg-white dark:bg-gray-900 z-50 overflow-y-auto">
           <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
@@ -270,6 +239,7 @@ const MarkdownEditor: React.FC = () => {
           </div>
         </div>
       )}
+      <ImagePreview imageUrl={previewImageUrl} onClose={() => setPreviewImageUrl(null)} />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { AuthProvider } from "@/lib/auth-context";
+import { ToastProvider } from "@/components/toast/toast-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,11 +22,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <Header />
-          <main>
-            {children}
-          </main>
-          <Footer />
+          <ToastProvider>
+            <Header />
+            <main>
+              {children}
+            </main>
+            <Footer />
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

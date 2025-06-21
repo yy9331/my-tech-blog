@@ -8,6 +8,7 @@ import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import ImagePreview from '@/components/ui/image-preview';
 
 interface Post {
   id: number;
@@ -71,6 +72,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
   const [error, setError] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
   const resolvedParams = use(params);
   const slug = resolvedParams.slug;
@@ -156,6 +158,26 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  const ImageRenderer: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = ({ src, alt }) => {
+    const handleClick = () => {
+      if (typeof src === 'string') {
+        setPreviewImageUrl(src);
+      }
+    };
+
+    if (!src) return null;
+    
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img 
+        src={src} 
+        alt={alt} 
+        onClick={handleClick}
+        className="cursor-pointer"
+      />
+    );
+  };
 
   if (loading) {
     return (
@@ -248,7 +270,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
 
           <div className="prose dark:prose-invert max-w-none prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-em:text-gray-200 prose-blockquote:text-gray-300 prose-li:text-gray-200 prose-a:text-sky-400 hover:prose-a:text-sky-300">
             <ReactMarkdown
-              components={{ code: CodeBlock as Components['code'] }}
+              components={{ code: CodeBlock as Components['code'], img: ImageRenderer }}
               remarkPlugins={[remarkGfm]}
             >
               {post.content}
@@ -292,6 +314,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
           )}
         </div>
       </div>
+      <ImagePreview imageUrl={previewImageUrl} onClose={() => setPreviewImageUrl(null)} />
     </div>
   );
 }
