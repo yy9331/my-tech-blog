@@ -81,7 +81,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
 
   // 自定义标题渲染器，为标题添加ID
   const createHeadingRenderer = (level: number) => {
-    return (props: any) => {
+    const HeadingRenderer = (props: React.PropsWithChildren<React.HTMLAttributes<HTMLHeadingElement>>) => {
       let text = String(props.children);
       
       // 移除Markdown语法符号，与目录组件保持一致
@@ -101,14 +101,30 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-');
 
-      const Component = `h${level}` as any;
+      const { children, ...restProps } = props;
       
-      return (
-        <Component id={baseId} className="scroll-mt-24" {...props}>
-          {props.children}
-        </Component>
-      );
+      switch (level) {
+        case 1:
+          return <h1 id={baseId} className="scroll-mt-24" {...restProps}>{children}</h1>;
+        case 2:
+          return <h2 id={baseId} className="scroll-mt-24" {...restProps}>{children}</h2>;
+        case 3:
+          return <h3 id={baseId} className="scroll-mt-24" {...restProps}>{children}</h3>;
+        case 4:
+          return <h4 id={baseId} className="scroll-mt-24" {...restProps}>{children}</h4>;
+        case 5:
+          return <h5 id={baseId} className="scroll-mt-24" {...restProps}>{children}</h5>;
+        case 6:
+          return <h6 id={baseId} className="scroll-mt-24" {...restProps}>{children}</h6>;
+        default:
+          return <h1 id={baseId} className="scroll-mt-24" {...restProps}>{children}</h1>;
+      }
     };
+
+    // 添加 displayName
+    HeadingRenderer.displayName = `HeadingRenderer${level}`;
+    
+    return HeadingRenderer;
   };
 
   useEffect(() => {

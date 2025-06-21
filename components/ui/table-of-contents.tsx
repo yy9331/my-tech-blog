@@ -36,7 +36,6 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
       const headings: TocItem[] = [];
       const idCounts: { [key: string]: number } = {};
       let inCodeBlock = false;
-      let codeBlockLanguage = '';
       
       lines.forEach((line, index) => {
         const trimmedLine = line.trim();
@@ -47,11 +46,9 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
           if (!inCodeBlock) {
             // 进入代码块
             inCodeBlock = true;
-            codeBlockLanguage = codeBlockStart[1] || '';
           } else {
             // 退出代码块
             inCodeBlock = false;
-            codeBlockLanguage = '';
           }
           return; // 跳过代码块标记行
         }
@@ -112,7 +109,6 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
       
       if (headings.length === 0) return;
 
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       const offset = 120; // 考虑固定头部的高度
 
       let activeHeading = headings[0];
