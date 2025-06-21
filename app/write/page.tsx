@@ -70,6 +70,14 @@ const MarkdownEditor: React.FC = () => {
   const [previewFull, setPreviewFull] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   
+  // 用于同步滚动的 Refs
+  const editorRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const mobileEditorRef = useRef<HTMLTextAreaElement>(null);
+  const mobilePreviewRef = useRef<HTMLDivElement>(null);
+  const activeScroller = useRef<'editor' | 'preview' | null>(null);
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
+  
   // 使用自定义 hook
   useSaveShortcut(containerRef);
 
@@ -82,6 +90,41 @@ const MarkdownEditor: React.FC = () => {
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
     setContent(newContent);
+  };
+
+  // 同步滚动的核心逻辑
+  const syncScroll = (source: 'editor' | 'preview') => {
+    if (activeScroller.current && activeScroller.current !== source) {
+      return;
+    }
+    activeScroller.current = source;
+
+    const editor = isMobile ? mobileEditorRef.current : editorRef.current;
+    const preview = isMobile ? mobilePreviewRef.current : previewRef.current;
+
+    if (!editor || !preview) return;
+
+    if (source === 'editor') {
+      const editorScrollHeight = editor.scrollHeight - editor.clientHeight;
+      if (editorScrollHeight > 0) {
+        const percentage = editor.scrollTop / editorScrollHeight;
+        preview.scrollTop = percentage * (preview.scrollHeight - preview.clientHeight);
+      }
+    } else {
+      const previewScrollHeight = preview.scrollHeight - preview.clientHeight;
+      if (previewScrollHeight > 0) {
+        const percentage = preview.scrollTop / previewScrollHeight;
+        editor.scrollTop = percentage * (editor.scrollHeight - editor.clientHeight);
+      }
+    }
+
+    if (scrollTimeout.current) {
+      clearTimeout(scrollTimeout.current);
+    }
+    // 使用一个短暂的延迟来重置 "activeScroller" 状态，防止滚动事件的循环触发
+    scrollTimeout.current = setTimeout(() => {
+      activeScroller.current = null;
+    }, 100);
   };
 
   // 设置初始内容
@@ -198,24 +241,35 @@ const MarkdownEditor: React.FC = () => {
                 全屏预览
               </button>
               <textarea
+                ref={mobileEditorRef}
+                onScroll={() => syncScroll('editor')}
                 className="w-full h-48 p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-600"
                 value={markdown}
                 onChange={handleContentChange}
                 placeholder="请输入正文..."
               />
-              <div className="w-full p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 h-48 overflow-y-auto">
+              <div 
+                ref={mobilePreviewRef}
+                onScroll={() => syncScroll('preview')}
+                className="w-full p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 h-48 overflow-y-auto"
+              >
                 {renderMarkdown()}
               </div>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
               <textarea
+                ref={editorRef}
+                onScroll={() => syncScroll('editor')}
                 className="w-full p-4 border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen"
                 value={markdown}
                 onChange={handleContentChange}
                 placeholder="请输入正文..."
               />
-              <div className="p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen overflow-y-auto">
+              <div 
+                ref={previewRef}
+                onScroll={() => syncScroll('preview')}
+                className="p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 h-screen overflow-y-auto">
                 {renderMarkdown()}
               </div>
             </div>
