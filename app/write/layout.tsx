@@ -23,7 +23,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [newlyCreatedTags, setNewlyCreatedTags] = useState<string[]>([]);
   const [tagsLoading, setTagsLoading] = useState(false);
-  const { content, setContent } = useEditor();
+  const { content, setContent, setIsSaving, setSaveSuccess, setSaveError } = useEditor();
   const searchParams = useSearchParams();
   const editSlug = searchParams.get('edit');
 
@@ -144,6 +144,10 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true);
+    setSaveSuccess(null);
+    setSaveError(null);
+
     const supabase = createClient();
     const { data: { session } } = await supabase.auth.getSession();
 
@@ -153,6 +157,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
 
       const redirectUrl = `/write${editSlug ? `?edit=${editSlug}` : ''}`;
       router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
+      setIsSaving(false);
       return;
     }
 
@@ -183,15 +188,19 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
 
       if (insertPostError) throw insertPostError;
       
-      // 保存成功后，清除 localStorage 中的暂存
       localStorage.removeItem('unsavedPost');
+      setSaveSuccess('文章保存成功！');
 
     } catch (err: unknown) {
+      const errorMessage = '保存失败，请检查网络或联系管理员。';
       if (err && typeof err === 'object' && 'message' in err) {
-        console.error('Error saving post:', (err as { message?: string }).message || '保存失败');
+        console.error('Error saving post:', (err as { message?: string }).message || errorMessage);
       } else {
-        console.error('Error saving post:', '保存失败');
+        console.error('Error saving post:', errorMessage);
       }
+      setSaveError(errorMessage);
+    } finally {
+      setIsSaving(false);
     }
   };
 

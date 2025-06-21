@@ -1,12 +1,34 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown, { Components }  from 'react-markdown';
 import 'highlight.js/styles/github-dark.min.css';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useEditor } from './context';
-import { createClient } from '@/lib/supabase/client';
+
+// -- Custom Hook for Save Shortcut --
+const useSaveShortcut = (formRef: React.RefObject<HTMLDivElement | null>) => {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const saveKeyPressed = (isMac ? event.metaKey : event.ctrlKey) && event.key === 's';
+
+      if (saveKeyPressed) {
+        event.preventDefault();
+        const form = formRef.current?.closest('form');
+        if (form) {
+          form.requestSubmit();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [formRef]);
+};
 
 // 视图模式类型定义
 type ViewMode = 'editor' | 'preview' | 'split';
@@ -39,16 +61,51 @@ const CodeBlock = ({ className, children }: {
 
 // 主组件
 const MarkdownEditor: React.FC = () => {
-  const { content: markdown, setContent } = useEditor();
+  const { 
+    content: markdown, 
+    setContent, 
+    isSaving, 
+    saveSuccess, 
+    saveError,
+    setSaveSuccess,
+    setSaveError
+  } = useEditor();
+  const containerRef = useRef<HTMLDivElement>(null);
   
-  // 控制当前视图模式
   const [viewMode, setViewMode] = useState<ViewMode>('split');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [previewFull, setPreviewFull] = useState(false);
+  
+  // 使用自定义 hook
+  useSaveShortcut(containerRef);
+
+  // 当保存成功或失败时，显示提示
+  useEffect(() => {
+    if (saveSuccess) {
+      if (isMobile) {
+        setToast({ type: 'success', message: saveSuccess });
+        setSaveSuccess(null); // 移动端立即清除，由 Toast 组件管理显示
+      } else {
+        // 桌面端，延迟清除以显示提示信息
+        const timer = setTimeout(() => setSaveSuccess(null), 4000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [saveSuccess, isMobile, setSaveSuccess]);
+
+  useEffect(() => {
+    if (saveError) {
+      if (isMobile) {
+        setToast({ type: 'error', message: saveError });
+        setSaveError(null); // 移动端立即清除
+      } else {
+        // 桌面端，延迟清除
+        const timer = setTimeout(() => setSaveError(null), 4000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [saveError, isMobile, setSaveError]);
 
   // 处理 Tab 切换
   const handleTabChange = (newMode: ViewMode) => {
@@ -75,47 +132,6 @@ const MarkdownEditor: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // 处理保存按钮点击
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      // 检查用户登录状态
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        // 如果未登录，不显示保存成功的提示
-        if (isMobile) {
-          setToast({ type: 'error', message: '请先登录' });
-          setTimeout(() => setToast(null), 3000);
-        } else {
-          setError('请先登录');
-          setTimeout(() => setError(''), 4000);
-        }
-        return;
-      }
-      
-      // 这里添加保存逻辑
-      if (isMobile) {
-        setToast({ type: 'success', message: '保存成功！' });
-        setTimeout(() => setToast(null), 3000);
-      } else {
-        setSuccess('保存成功！');
-        setTimeout(() => setSuccess(''), 4000);
-      }
-    } catch {
-      if (isMobile) {
-        setToast({ type: 'error', message: '保存失败' });
-        setTimeout(() => setToast(null), 3000);
-      } else {
-        setError('保存失败');
-        setTimeout(() => setError(''), 4000);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const renderMarkdown = () => (
     <div className="prose dark:prose-invert max-w-none">
       <ReactMarkdown
@@ -128,7 +144,7 @@ const MarkdownEditor: React.FC = () => {
   );
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4" ref={containerRef}>
       {/* 移动端 Toast 提示 */}
       {isMobile && toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border border-gray-200 bg-white text-gray-900 min-w-[200px] max-w-[90vw]" style={{boxShadow:'0 2px 8px rgba(0,0,0,0.12)'}}>
@@ -159,14 +175,14 @@ const MarkdownEditor: React.FC = () => {
         {/* 桌面端保存按钮 */}
         {!isMobile && (
           <div className="flex items-center space-x-4">
-            {error && <div className="text-red-400">{error}</div>}
-            {success && <div className="text-sky-400">{success}</div>}
+            {saveError && <div className="text-red-400">{saveError}</div>}
+            {saveSuccess && <div className="text-sky-400">{saveSuccess}</div>}
             <button
-              onClick={handleSave}
+              type="submit"
               className="px-6 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold transition-colors disabled:opacity-60"
-              disabled={loading}
+              disabled={isSaving}
             >
-              {loading ? '保存中...' : '保存'}
+              {isSaving ? '保存中...' : '保存'}
             </button>
           </div>
         )}
@@ -174,11 +190,11 @@ const MarkdownEditor: React.FC = () => {
       {/* 移动端悬浮保存按钮 */}
       {isMobile && (
         <button
-          onClick={handleSave}
+          type="submit"
           className="fixed bottom-6 right-6 z-50 px-8 py-4 rounded-full bg-sky-600 hover:bg-sky-500 text-white text-lg font-bold shadow-lg transition-colors disabled:opacity-60"
-          disabled={loading}
+          disabled={isSaving}
         >
-          {loading ? '保存中...' : '保存'}
+          {isSaving ? '保存中...' : '保存'}
         </button>
       )}
       {/* 编辑器内容区域 */}
