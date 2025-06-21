@@ -27,7 +27,8 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
   const editSlug = searchParams.get('edit');
 
   useEffect(() => {
-    const fetchInitialTags = async () => {
+    const fetchInitialData = async () => {
+      // 获取初始标签
       const supabase = createClient();
       const { data, error } = await supabase
         .from('Tags')
@@ -36,34 +37,36 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
 
       if (error) {
         console.error('Error fetching initial tags:', error);
-        throw error;
+      } else {
+        setAvailableTags(data.map(item => item.name));
       }
-      setAvailableTags(data.map(item => item.name));
-    };
 
-    fetchInitialTags();
-  }, []);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        if (editSlug) {
-          router.push(`/auth/login?redirect=/write?edit=${editSlug}`);
-        } else {
-          router.push(`/auth/login?redirect=/write`);
+      // 尝试从 localStorage 恢复未保存的文章
+      const unsavedPostJson = localStorage.getItem('unsavedPost');
+      if (unsavedPostJson) {
+        try {
+          const post = JSON.parse(unsavedPostJson);
+          setTitle(post.title || '');
+          setDate(post.date || '');
+          setAuthor(post.author || '');
+          setReadTime(post.readTime || '');
+          setTags(post.tags || []);
+          setContent(post.content || '');
+          setCollapsed(false); // 展开表单以显示恢复的数据
+          localStorage.removeItem('unsavedPost');
+        } catch (e) {
+          console.error('无法从 localStorage 解析未保存的文章', e);
+          localStorage.removeItem('unsavedPost'); // 清理错误数据
         }
-        return;
       }
     };
-    checkAuth();
-  }, [router, editSlug]);
+
+    fetchInitialData();
+  }, [setContent]);
 
   useEffect(() => {
     const fetchPost = async () => {
-      if (!editSlug) return;
+      if (!editSlug || localStorage.getItem('unsavedPost')) return;
 
       try {
         const { data: post, error: fetchError } = await createClient()
@@ -103,6 +106,17 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      const postData = { title, date, author, readTime, tags, content };
+      localStorage.setItem('unsavedPost', JSON.stringify(postData));
+
+      const redirectUrl = `/write${editSlug ? `?edit=${editSlug}` : ''}`;
+      router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
+      return;
+    }
 
     try {
       if (newlyCreatedTags.length > 0) {
@@ -130,6 +144,10 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
       });
 
       if (insertPostError) throw insertPostError;
+      
+      // 保存成功后，清除 localStorage 中的暂存
+      localStorage.removeItem('unsavedPost');
+
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'message' in err) {
         console.error('Error saving post:', (err as { message?: string }).message || '保存失败');
@@ -219,7 +237,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
                       <div className="mt-2 text-sm text-sky-400">可多选，输入或选择后回车/点击添加</div>
                     </div>
                     <div className="md:col-span-2">
-                      <ImageUploader />
+                      <ImageUploader editSlug={editSlug} />
                     </div>
                   </div>
                 </div>

@@ -2,17 +2,32 @@
 import { useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { nanoid } from 'nanoid';
+import { useRouter } from 'next/navigation';
 
-const ImageUploader = () => {
+type ImageUploaderProps = {
+  editSlug: string | null;
+}
+
+const ImageUploader = ({ editSlug }: ImageUploaderProps) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
+      return;
+    }
+
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      const redirectUrl = `/write${editSlug ? `?edit=${editSlug}` : ''}`;
+      router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
       return;
     }
 
@@ -22,7 +37,6 @@ const ImageUploader = () => {
     setCopySuccess(false);
 
     try {
-      const supabase = createClient();
       const fileExt = file.name.split('.').pop();
       const fileName = `${nanoid()}.${fileExt}`;
       const filePath = `${fileName}`;
