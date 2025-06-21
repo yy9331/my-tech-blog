@@ -66,3 +66,43 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  /* 目录组件样式 */
+  .toc {
+    @apply bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 border border-gray-700/50;
+  }
+  
+  .toc ul {
+    @apply max-h-96 overflow-y-auto;
+  }
+  
+  .toc ul::-webkit-scrollbar {
+    @apply w-1;
+  }
+  
+  .toc ul::-webkit-scrollbar-track {
+    @apply bg-gray-700/30 rounded;
+  }
+  
+  .toc ul::-webkit-scrollbar-thumb {
+    @apply bg-gray-600/50 rounded hover:bg-gray-500/50;
+  }
+  
+  /* 平滑滚动 */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* 标题锚点偏移 - 考虑固定头部和目录的高度 */
+  .scroll-mt-24 {
+    scroll-margin-top: 6rem; /* 96px */
+  }
+  
+  /* 移动端锚点偏移 */
+  @media (max-width: 768px) {
+    .scroll-mt-24 {
+      scroll-margin-top: 5rem; /* 80px */
+    }
+  }
+}

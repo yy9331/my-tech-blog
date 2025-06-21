@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ImagePreview from '@/components/ui/image-preview';
+import TableOfContents from '@/components/ui/table-of-contents';
 
 interface Post {
   id: number;
@@ -73,9 +74,42 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const [isTocCollapsed, setIsTocCollapsed] = useState(false);
 
   const resolvedParams = use(params);
   const slug = resolvedParams.slug;
+
+  // 自定义标题渲染器，为标题添加ID
+  const createHeadingRenderer = (level: number) => {
+    return (props: any) => {
+      let text = String(props.children);
+      
+      // 移除Markdown语法符号，与目录组件保持一致
+      text = text
+        .replace(/\*\*\*(.*?)\*\*\*/g, '$1') // 移除 ***text*** 格式
+        .replace(/\*\*(.*?)\*\*/g, '$1')     // 移除 **text** 格式
+        .replace(/\*(.*?)\*/g, '$1')         // 移除 *text* 格式
+        .replace(/`(.*?)`/g, '$1')           // 移除 `text` 格式
+        .replace(/\[(.*?)\]\(.*?\)/g, '$1')  // 移除 [text](url) 格式
+        .replace(/^\d+\.\s*/, '')            // 移除开头的数字和点，如 "1. "
+        .replace(/^\d+\)\s*/, '')            // 移除开头的数字和括号，如 "1) "
+        .trim();
+      
+      const baseId = text
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+
+      const Component = `h${level}` as any;
+      
+      return (
+        <Component id={baseId} className="scroll-mt-24" {...props}>
+          {props.children}
+        </Component>
+      );
+    };
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -179,6 +213,11 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
     );
   };
 
+  // 处理目录收缩状态变化
+  const handleTocCollapsed = (collapsed: boolean) => {
+    setIsTocCollapsed(collapsed);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex justify-center items-center">
@@ -214,104 +253,124 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
           返回首页
         </button>
 
-        {/* 文章内容 */}
-        <article className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg p-8">
-          <header className="mb-8">
-            <div className="flex justify-between items-start">
-              <h1 className="text-4xl font-bold text-white mb-4">
-                {post.title}
-              </h1>
-              {isAuthorized && (
-                <>
-                  {/* 桌面端：原按钮 */}
-                  {!isMobile && (
-                    <Link
-                      href={`/write?edit=${post.slug}`}
-                      className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors flex items-center gap-2"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                      编辑该文章
-                    </Link>
-                  )}
-                  {/* 移动端：仅边框图标 */}
-                  {isMobile && (
-                    <Link
-                      href={`/write?edit=${post.slug}`}
-                      className="w-10 h-10 flex items-center justify-center border-2 border-sky-600 rounded-lg hover:bg-sky-900 transition-colors"
-                      aria-label="编辑该文章"
-                    >
-                      <svg className="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </Link>
-                  )}
-                </>
-              )}
-            </div>
-            <div className="flex items-center gap-4 text-gray-300">
-              <span>{post.date}</span>
-              {post.readTime && (
-                <span>· {post.readTime} min read</span>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-2 mt-4">
-              {post.tags?.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 text-sm font-medium bg-sky-900/50 text-sky-300 rounded-full"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </header>
+        {/* 文章内容 - 为固定目录留出空间 */}
+        <div className={`transition-all duration-300 ${
+          isMobile ? '' : isTocCollapsed ? 'ml-20' : 'ml-80'
+        }`}>
+          <article className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg p-8">
+            <header className="mb-8">
+              <div className="flex justify-between items-start">
+                <h1 className="text-4xl font-bold text-white mb-4">
+                  {post.title}
+                </h1>
+                {isAuthorized && (
+                  <>
+                    {/* 桌面端：原按钮 */}
+                    {!isMobile && (
+                      <Link
+                        href={`/write?edit=${post.slug}`}
+                        className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        编辑该文章
+                      </Link>
+                    )}
+                    {/* 移动端：仅边框图标 */}
+                    {isMobile && (
+                      <Link
+                        href={`/write?edit=${post.slug}`}
+                        className="w-10 h-10 flex items-center justify-center border-2 border-sky-600 rounded-lg hover:bg-sky-900 transition-colors"
+                        aria-label="编辑该文章"
+                      >
+                        <svg className="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </Link>
+                    )}
+                  </>
+                )}
+              </div>
+              <div className="flex items-center gap-4 text-gray-300">
+                <span>{post.date}</span>
+                {post.readTime && (
+                  <span>· {post.readTime} min read</span>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2 mt-4">
+                {post.tags?.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 text-sm font-medium bg-sky-900/50 text-sky-300 rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </header>
 
-          <div className="prose dark:prose-invert max-w-none prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-em:text-gray-200 prose-blockquote:text-gray-300 prose-li:text-gray-200 prose-a:text-sky-400 hover:prose-a:text-sky-300">
-            <ReactMarkdown
-              components={{ code: CodeBlock as Components['code'], img: ImageRenderer }}
-              remarkPlugins={[remarkGfm]}
-            >
-              {post.content}
-            </ReactMarkdown>
-          </div>
-        </article>
+            <div className="prose dark:prose-invert max-w-none prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-em:text-gray-200 prose-blockquote:text-gray-300 prose-li:text-gray-200 prose-a:text-sky-400 hover:prose-a:text-sky-300">
+              <ReactMarkdown
+                components={{ 
+                  code: CodeBlock as Components['code'], 
+                  img: ImageRenderer,
+                  h1: createHeadingRenderer(1),
+                  h2: createHeadingRenderer(2),
+                  h3: createHeadingRenderer(3),
+                  h4: createHeadingRenderer(4),
+                  h5: createHeadingRenderer(5),
+                  h6: createHeadingRenderer(6),
+                }}
+                remarkPlugins={[remarkGfm]}
+              >
+                {post.content}
+              </ReactMarkdown>
+            </div>
+          </article>
+        </div>
+
+        {/* 目录组件 - 固定定位 */}
+        <TableOfContents content={post.content} isMobile={isMobile} isTocCollapsed={isTocCollapsed} onTocCollapsed={handleTocCollapsed} />
 
         {/* 导航按钮 */}
-        <div className="max-w-4xl mx-auto mt-12 flex justify-between gap-4">
-          {prevPost ? (
-            <Link
-              href={`/post/${prevPost.slug}`}
-              className="flex-1 p-4 bg-gray-800 rounded-lg shadow-md hover:bg-gray-700 transition-colors duration-300 group flex items-center justify-between"
-            >
-              <svg className="w-5 h-5 text-gray-300 group-hover:text-sky-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-              <div className="text-left flex-1">
-                <div className="text-sm text-gray-300 group-hover:text-sky-400">上一篇</div>
-                <div className="mt-1 font-semibold text-gray-100 group-hover:text-sky-300">{prevPost.title}</div>
-              </div>
-            </Link>
-          ) : (
-            <div className="flex-1"></div>
-          )}
-          {nextPost ? (
-            <Link
-              href={`/post/${nextPost.slug}`}
-              className="flex-1 p-4 bg-gray-800 rounded-lg shadow-md hover:bg-gray-700 transition-colors duration-300 group flex items-center justify-between text-right"
-            >
-              <div className="text-right flex-1">
-                <div className="text-sm text-gray-300 group-hover:text-sky-400">下一篇</div>
-                <div className="mt-1 font-semibold text-gray-100 group-hover:text-sky-300">{nextPost.title}</div>
-              </div>
-              <svg className="w-5 h-5 text-gray-300 group-hover:text-sky-400 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </Link>
-          ) : (
-            <div className="flex-1"></div>
-          )}
+        <div className={`transition-all duration-300 ${
+          isMobile ? '' : isTocCollapsed ? 'ml-20' : 'ml-80'
+        }`}>
+          <div className="max-w-4xl mx-auto mt-12 flex justify-between gap-4">
+            {prevPost ? (
+              <Link
+                href={`/post/${prevPost.slug}`}
+                className="flex-1 p-4 bg-gray-800 rounded-lg shadow-md hover:bg-gray-700 transition-colors duration-300 group flex items-center justify-between"
+              >
+                <svg className="w-5 h-5 text-gray-300 group-hover:text-sky-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <div className="text-left flex-1">
+                  <div className="text-sm text-gray-300 group-hover:text-sky-400">上一篇</div>
+                  <div className="mt-1 font-semibold text-gray-100 group-hover:text-sky-300">{prevPost.title}</div>
+                </div>
+              </Link>
+            ) : (
+              <div className="flex-1"></div>
+            )}
+            {nextPost ? (
+              <Link
+                href={`/post/${nextPost.slug}`}
+                className="flex-1 p-4 bg-gray-800 rounded-lg shadow-md hover:bg-gray-700 transition-colors duration-300 group flex items-center justify-between text-right"
+              >
+                <div className="text-right flex-1">
+                  <div className="text-sm text-gray-300 group-hover:text-sky-400">下一篇</div>
+                  <div className="mt-1 font-semibold text-gray-100 group-hover:text-sky-300">{nextPost.title}</div>
+                </div>
+                <svg className="w-5 h-5 text-gray-300 group-hover:text-sky-400 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </Link>
+            ) : (
+              <div className="flex-1"></div>
+            )}
+          </div>
         </div>
       </div>
       <ImagePreview imageUrl={previewImageUrl} onClose={() => setPreviewImageUrl(null)} />
