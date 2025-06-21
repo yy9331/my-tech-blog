@@ -6,9 +6,10 @@ interface TagsMultiSelectProps {
   onChange: (tags: string[]) => void;
   placeholder?: string;
   onNewTagCreated?: (newTag: string) => void;
+  loading?: boolean;
 }
 
-export default function TagsMultiSelect({ options, value, onChange, placeholder, onNewTagCreated }: TagsMultiSelectProps) {
+export default function TagsMultiSelect({ options, value, onChange, placeholder, onNewTagCreated, loading }: TagsMultiSelectProps) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,21 +78,35 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder,
           placeholder={placeholder || '请选择/输入标签'}
         />
       </div>
-      {open && filteredOptions.length > 0 && (
-        <ul className="absolute z-10 left-0 right-0 bg-gray-800 border border-gray-600 rounded-b-lg mt-1 max-h-40 overflow-auto shadow-lg">
-          {filteredOptions.map(tag => (
-            <li
-              key={tag}
-              className="px-4 py-2 cursor-pointer hover:bg-sky-600 hover:text-white text-gray-200"
-              onClick={() => {
-                onChange([...value, tag]);
-                setInput('');
-                setOpen(false);
-              }}
-            >
-              {tag}
+      {open && (
+        <ul className="absolute z-10 left-0 right-0 bg-gray-800 border border-gray-600 rounded-b-lg mt-1 max-h-40 overflow-y-auto shadow-lg">
+          {loading ? (
+            <li className="flex justify-center items-center px-4 py-2 text-gray-400">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>加载中...</span>
             </li>
-          ))}
+          ) : filteredOptions.length > 0 ? (
+            filteredOptions.map(tag => (
+              <li
+                key={tag}
+                className="px-4 py-2 cursor-pointer hover:bg-sky-600 hover:text-white text-gray-200"
+                onClick={() => {
+                  onChange([...value, tag]);
+                  setInput('');
+                  setOpen(false);
+                }}
+              >
+                {tag}
+              </li>
+            ))
+          ) : (
+            <li className="px-4 py-2 text-gray-400">
+              {input.trim() ? '没有匹配的标签' : '没有可用标签'}。按回车键创建。
+            </li>
+          )}
         </ul>
       )}
     </div>

@@ -41,7 +41,7 @@ const ImageUploader = ({ editSlug }: ImageUploaderProps) => {
       const fileName = `${nanoid()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      const { data, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('imgs')
         .upload(filePath, file);
 
@@ -54,8 +54,12 @@ const ImageUploader = ({ editSlug }: ImageUploaderProps) => {
         .getPublicUrl(filePath);
 
       setUploadedUrl(publicUrl);
-    } catch (e: any) {
-      setError(e.message || '上传失败，请检查存储桶策略或网络连接。');
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message || '上传失败，请检查存储桶策略或网络连接。');
+      } else {
+        setError('上传失败，请检查存储桶策略或网络连接。');
+      }
     } finally {
       setUploading(false);
     }
@@ -69,7 +73,17 @@ const ImageUploader = ({ editSlug }: ImageUploaderProps) => {
     }
   };
   
-  const triggerFileSelect = () => {
+  const triggerFileSelect = async () => {
+    // 在触发文件选择前检查登录状态
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      const redirectUrl = `/write${editSlug ? `?edit=${editSlug}` : ''}`;
+      router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
+      return;
+    }
+
     fileInputRef.current?.click();
   };
 

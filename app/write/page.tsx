@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useEditor } from './context';
+import { createClient } from '@/lib/supabase/client';
 
 // 视图模式类型定义
 type ViewMode = 'editor' | 'preview' | 'split';
@@ -78,6 +79,22 @@ const MarkdownEditor: React.FC = () => {
   const handleSave = async () => {
     setLoading(true);
     try {
+      // 检查用户登录状态
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // 如果未登录，不显示保存成功的提示
+        if (isMobile) {
+          setToast({ type: 'error', message: '请先登录' });
+          setTimeout(() => setToast(null), 3000);
+        } else {
+          setError('请先登录');
+          setTimeout(() => setError(''), 4000);
+        }
+        return;
+      }
+      
       // 这里添加保存逻辑
       if (isMobile) {
         setToast({ type: 'success', message: '保存成功！' });

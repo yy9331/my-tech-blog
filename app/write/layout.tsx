@@ -22,25 +22,13 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [newlyCreatedTags, setNewlyCreatedTags] = useState<string[]>([]);
+  const [tagsLoading, setTagsLoading] = useState(false);
   const { content, setContent } = useEditor();
   const searchParams = useSearchParams();
   const editSlug = searchParams.get('edit');
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      // 获取初始标签
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from('Tags')
-        .select('name')
-        .order('name', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching initial tags:', error);
-      } else {
-        setAvailableTags(data.map(item => item.name));
-      }
-
       // 尝试从 localStorage 恢复未保存的文章
       const unsavedPostJson = localStorage.getItem('unsavedPost');
       if (unsavedPostJson) {
@@ -58,6 +46,56 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
           console.error('无法从 localStorage 解析未保存的文章', e);
           localStorage.removeItem('unsavedPost'); // 清理错误数据
         }
+      }
+
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.log('User not logged in, skipping tags fetch');
+        setAvailableTags([]);
+        return;
+      }
+
+      setTagsLoading(true);
+      try {
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+          console.error('Missing Supabase environment variables');
+          setAvailableTags([]);
+          return;
+        }
+        
+        console.log('User logged in, fetching tags from database...');
+        
+        const { data, error } = await supabase
+          .from('Tags')
+          .select('name')
+          .order('name', { ascending: true });
+
+        console.log('Supabase response:', { data, error });
+
+        if (error) {
+          console.error('Error fetching initial tags:', error);
+          console.error('Error details:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
+          setAvailableTags([]);
+        } else if (data) {
+          console.log('Successfully fetched tags:', data);
+          setAvailableTags(data.map(item => item.name));
+        } else {
+          console.warn('No tags data received, setting empty array');
+          setAvailableTags([]);
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching initial tags:', err);
+        console.error('Error type:', typeof err);
+        console.error('Error stack:', err instanceof Error ? err.stack : 'No stack trace');
+        setAvailableTags([]);
+      } finally {
+        setTagsLoading(false);
       }
     };
 
@@ -182,7 +220,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
             <div
               className={`grid transition-all duration-500 ease-in-out ${collapsed ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'}`}
             >
-              <div className="overflow-hidden">
+              <div className="min-h-0">
                 <div className="p-6 bg-gray-800 rounded-b-lg">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -233,6 +271,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
                         onChange={setTags}
                         onNewTagCreated={handleNewTagCreated}
                         placeholder="请选择或输入标签"
+                        loading={tagsLoading}
                       />
                       <div className="mt-2 text-sm text-sky-400">可多选，输入或选择后回车/点击添加</div>
                     </div>
