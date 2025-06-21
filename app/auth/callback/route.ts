@@ -6,7 +6,8 @@ import { isGitHubUserAllowed } from "@/lib/auth-config";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  const next = searchParams.get("next");
+  const redirect = searchParams.get("redirect");
 
   if (code) {
     const supabase = await createClient();
@@ -30,11 +31,16 @@ export async function GET(request: NextRequest) {
         }
       }
       
-      // 验证通过，重定向到目标页面
-      return NextResponse.redirect(`${origin}${next}`);
+      if (redirect) {
+        return NextResponse.redirect(`${origin}${redirect}`);
+      }
+      if (next) {
+        return NextResponse.redirect(origin);
+      }
+      return NextResponse.redirect(origin);
     }
   }
 
   // 如果出现错误，重定向到登录页面并显示错误信息
-  return NextResponse.redirect(`${origin}/auth/login?error=OAuth authentication failed`);
+  return NextResponse.redirect(`${origin}/auth/error`);
 } 

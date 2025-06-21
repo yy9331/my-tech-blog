@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/lib/auth-context';
 import { FaGithub } from 'react-icons/fa';
@@ -13,6 +13,8 @@ export default function LoginForm({ error: initialError }: { error?: string }) {
   const [error, setError] = useState(initialError || '');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
   const { setIsLoggedIn } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -30,8 +32,8 @@ export default function LoginForm({ error: initialError }: { error?: string }) {
       if (error) setError(error.message)
       // 登录成功后更新状态
       setIsLoggedIn(true);
-      // 登录成功后跳转回主页
-      router.push('/')
+      // 登录成功后跳转
+      router.push(redirectUrl || '/')
     }catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
     }finally{
@@ -47,7 +49,7 @@ export default function LoginForm({ error: initialError }: { error?: string }) {
       const { error } = await createClient().auth.signInWithOAuth({ 
         provider: 'github',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${window.location.origin}/auth/callback${redirectUrl ? `?redirect=${redirectUrl}` : ''}`
         }
       });
       if (error) setError(error.message);

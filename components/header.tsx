@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { useState } from 'react';
@@ -9,7 +9,13 @@ import { useState } from 'react';
 const Header = () => {
   const { isLoggedIn, setIsLoggedIn, userEmail, userName, userAvatar } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleLogin = () => {
+    const redirectUrl = `/auth/login?redirect=${encodeURIComponent(pathname)}`;
+    router.push(redirectUrl);
+  };
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -21,7 +27,11 @@ const Header = () => {
   // 移动端菜单项点击后关闭菜单
   const handleMenuClick = (href: string) => {
     setMenuOpen(false);
-    router.push(href);
+    if (href === 'auth/login') {
+      handleLogin();
+    } else {
+      router.push(href);
+    }
   };
 
   // 用户信息组件
@@ -90,12 +100,12 @@ const Header = () => {
             {isLoggedIn ? (
               <UserInfo />
             ) : (
-              <Link
-                href="auth/login"
-                className="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-500 transition-colors"
+              <button
+                onClick={handleLogin}
+                className="px-4 py-1.5 bg-sky-600 border border-sky-600 text-white text-sm rounded-md hover:bg-sky-500 transition-colors"
               >
                 登录
-              </Link>
+              </button>
             )}
           </div>
           {/* 移动端三明治按钮 */}
