@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from '@/lib/auth-context';
 import { FaGithub } from 'react-icons/fa';
 
-export default function LoginForm() {
+export default function LoginForm({ error: initialError }: { error?: string }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(initialError || '');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { setIsLoggedIn } = useAuth();
@@ -46,7 +46,12 @@ export default function LoginForm() {
     setError('');
     setIsLoading(true);
     try {
-      const { error } = await createClient().auth.signInWithOAuth({ provider: 'github' });
+      const { error } = await createClient().auth.signInWithOAuth({ 
+        provider: 'github',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
       if (error) setError(error.message);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
