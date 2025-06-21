@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/lib/auth-context';
 import { FaGithub } from 'react-icons/fa';
+import { isEmailAllowed, AUTH_CONFIG } from '@/lib/auth-config';
 
 export default function LoginForm({ error: initialError }: { error?: string }) {
   const [email, setEmail] = useState('');
@@ -14,15 +15,12 @@ export default function LoginForm({ error: initialError }: { error?: string }) {
   const router = useRouter();
   const { setIsLoggedIn } = useAuth();
 
-  // 只允许你的邮箱
-  const YOUR_EMAIL = 'yuyi.gz@163.com';
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    if (email !== YOUR_EMAIL) {
+    if (!isEmailAllowed(email)) {
       setError('只允许管理员登录');
       setIsLoading(false);
       return
@@ -107,20 +105,29 @@ export default function LoginForm({ error: initialError }: { error?: string }) {
           )}
         </Button>
       </form>
-      <div className="my-6 flex items-center">
-        <div className="flex-1 h-px bg-gray-700" />
-        <span className="mx-4 text-gray-400 text-sm">或</span>
-        <div className="flex-1 h-px bg-gray-700" />
-      </div>
-      <Button
-        type="button"
-        onClick={handleGitHubLogin}
-        className="w-full bg-gray-900 hover:bg-gray-700 text-white p-3 rounded-lg font-medium flex items-center justify-center gap-2 border border-gray-700"
-        disabled={isLoading}
-      >
-        <FaGithub className="w-5 h-5" />
-        使用 GitHub 登录
-      </Button>
+      {AUTH_CONFIG.ENABLE_GITHUB_LOGIN && (
+        <>
+          <div className="my-6 flex items-center">
+            <div className="flex-1 h-px bg-gray-700" />
+            <span className="mx-4 text-gray-400 text-sm">或</span>
+            <div className="flex-1 h-px bg-gray-700" />
+          </div>
+          <div className="mb-4">
+            <Button
+              type="button"
+              onClick={handleGitHubLogin}
+              className="w-full bg-gray-900 hover:bg-gray-700 text-white p-3 rounded-lg font-medium flex items-center justify-center gap-2 border border-gray-700"
+              disabled={isLoading}
+            >
+              <FaGithub className="w-5 h-5" />
+              使用 GitHub 登录
+            </Button>
+            <p className="text-xs text-gray-400 mt-2 text-center">
+              仅限授权用户使用 GitHub 登录
+            </p>
+          </div>
+        </>
+      )}
     </div>
   )
 }
