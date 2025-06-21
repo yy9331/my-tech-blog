@@ -227,66 +227,66 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
               </svg>
             </button>
             <div
-              className={`grid transition-all duration-500 ease-in-out ${collapsed ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'}`}
+              className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                collapsed ? 'max-h-0 opacity-0' : 'max-h-[800px] opacity-100'
+              }`}
             >
-              <div className="min-h-0">
-                <div className="p-6 bg-gray-800 rounded-b-lg">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-gray-300 mb-1">标题</label>
-                      <input
-                        type="text"
-                        value={title}
-                        onChange={e => setTitle(e.target.value)}
-                        className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
-                        placeholder="请输入文章标题"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-300 mb-1">日期</label>
-                      <input
-                        type="date"
-                        value={date}
-                        onChange={e => setDate(e.target.value)}
-                        className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-300 mb-1">作者</label>
-                      <input
-                        type="text"
-                        value={author}
-                        onChange={e => setAuthor(e.target.value)}
-                        className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
-                        placeholder="请输入作者名"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-300 mb-1">预计阅读时间(分钟)</label>
-                      <input
-                        type="number"
-                        min={1}
-                        value={readTime}
-                        onChange={e => setReadTime(e.target.value === '' ? '' : Number(e.target.value))}
-                        className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
-                        placeholder="如：5"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-gray-300 mb-1">标签</label>
-                      <TagsMultiSelect
-                        options={availableTags}
-                        value={tags}
-                        onChange={setTags}
-                        onNewTagCreated={handleNewTagCreated}
-                        placeholder="请选择或输入标签"
-                        loading={tagsLoading}
-                      />
-                      <div className="mt-2 text-sm text-sky-400">可多选，输入或选择后回车/点击添加</div>
-                    </div>
-                    <div className="md:col-span-2">
-                      <ImageUploader editSlug={editSlug} />
-                    </div>
+              <div className="p-6 bg-gray-800 rounded-b-lg">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-gray-300 mb-1">标题</label>
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={e => setTitle(e.target.value)}
+                      className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
+                      placeholder="请输入文章标题"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-300 mb-1">日期</label>
+                    <input
+                      type="date"
+                      value={date}
+                      onChange={e => setDate(e.target.value)}
+                      className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-300 mb-1">作者</label>
+                    <input
+                      type="text"
+                      value={author}
+                      onChange={e => setAuthor(e.target.value)}
+                      className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
+                      placeholder="请输入作者名"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-300 mb-1">预计阅读时间(分钟)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={readTime}
+                      onChange={e => setReadTime(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
+                      placeholder="如：5"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-gray-300 mb-1">标签</label>
+                    <TagsMultiSelect
+                      options={availableTags}
+                      value={tags}
+                      onChange={setTags}
+                      onNewTagCreated={handleNewTagCreated}
+                      placeholder="请选择或输入标签"
+                      loading={tagsLoading}
+                    />
+                    <div className="mt-2 text-sm text-sky-400">可多选，输入或选择后回车/点击添加</div>
+                  </div>
+                  <div className="md:col-span-2">
+                    <ImageUploader editSlug={editSlug} />
                   </div>
                 </div>
               </div>
