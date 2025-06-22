@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get("next");
   const redirect = searchParams.get("redirect");
 
+  // 使用环境变量或请求的origin来获取正确的域名
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || origin;
+
   if (code) {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
@@ -27,20 +30,20 @@ export async function GET(request: NextRequest) {
         if (!githubUsername || !isGitHubUserAllowed(githubUsername)) {
           // 不在允许列表中，登出用户并重定向到错误页面
           await supabase.auth.signOut();
-          return NextResponse.redirect(`${origin}/auth/login?error=Access denied. Only authorized GitHub users can login.`);
+          return NextResponse.redirect(`${baseUrl}/auth/login?error=Access denied. Only authorized GitHub users can login.`);
         }
       }
       
       if (redirect) {
-        return NextResponse.redirect(`${origin}${redirect}`);
+        return NextResponse.redirect(`${baseUrl}${redirect}`);
       }
       if (next) {
-        return NextResponse.redirect(origin);
+        return NextResponse.redirect(baseUrl);
       }
-      return NextResponse.redirect(origin);
+      return NextResponse.redirect(baseUrl);
     }
   }
 
   // 如果出现错误，重定向到登录页面并显示错误信息
-  return NextResponse.redirect(`${origin}/auth/error`);
+  return NextResponse.redirect(`${baseUrl}/auth/error`);
 } 

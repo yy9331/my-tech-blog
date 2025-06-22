@@ -46,10 +46,14 @@ export default function LoginForm({ error: initialError }: { error?: string }) {
     setError('');
     setIsLoading(true);
     try {
+      // 使用环境变量或当前域名来构建重定向URL
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      const redirectTo = `${baseUrl}/auth/callback${redirectUrl ? `?redirect=${redirectUrl}` : ''}`;
+      
       const { error } = await createClient().auth.signInWithOAuth({ 
         provider: 'github',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback${redirectUrl ? `?redirect=${redirectUrl}` : ''}`
+          redirectTo
         }
       });
       if (error) setError(error.message);
