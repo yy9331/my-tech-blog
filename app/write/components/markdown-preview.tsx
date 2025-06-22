@@ -17,7 +17,19 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
   className = ''
 }) => {
   const components: Components = {
-    code: CodeBlock as Components['code'],
+    code: (props) => {
+      const { className, children, ...rest } = props;
+      const inline = (rest as { inline?: boolean }).inline;
+      return (
+        <CodeBlock 
+          className={className} 
+          inline={inline}
+          {...rest}
+        >
+          {children}
+        </CodeBlock>
+      );
+    },
     img: (props) => <ImageRenderer {...props} onImageClick={onImageClick} />,
   };
 

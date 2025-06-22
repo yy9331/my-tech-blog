@@ -6,10 +6,9 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ImagePreview from '@/components/ui/image-preview';
 import TableOfContents from '@/components/ui/table-of-contents';
+import CodeBlock from '@/components/code-block';
 
 interface Post {
   id: number;
@@ -26,43 +25,6 @@ interface NavigationPost {
   title: string;
 }
 
-const CodeBlock = ({ 
-  inline, 
-  className, 
-  children 
-}: {
-  inline?: boolean;
-  className?: string;
-  children: React.ReactNode;
-}) => {
-  const match = /language-(\w+)/.exec(className || '');
-  const language = match ? match[1] : '';
-
-  if (inline) {
-    // 行内代码：只渲染 <code>
-    return (
-      <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">
-        {children}
-      </code>
-    );
-  }
-
-  // 代码块：用高亮
-  return (
-    <SyntaxHighlighter
-      language={language}
-      style={vscDarkPlus}
-      showLineNumbers={true}
-      customStyle={{
-        margin: '1em 0',
-        borderRadius: '0.5rem',
-        padding: '1em',
-      }}
-    >
-      {String(children).replace(/\n$/, '')}
-    </SyntaxHighlighter>
-  );
-};
 
 export default function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
