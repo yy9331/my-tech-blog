@@ -1,105 +1,126 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# 我的技术博客
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+一个基于 Next.js 和 Supabase 构建的现代化技术博客系统。
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+## 🚀 功能特性
 
-## Features
+- **现代化技术栈**: Next.js 15 + TypeScript + Tailwind CSS
+- **数据库**: PostgreSQL
+- **认证系统**: 支持邮箱密码和 GitHub OAuth 登录
+- **Markdown 编辑器**: 支持实时预览和语法高亮
+- **图片上传**: 支持图片上传和预览
+- **标签系统**: 支持文章分类和标签管理
+- **响应式设计**: 完美适配桌面端和移动端
+- **目录导航**: 文章自动生成目录，支持滚动同步
+- **主题切换**: 支持深色/浅色主题
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+## 📁 项目结构
 
-## Demo
+```
+my-tech-blog/
+├── app/                    # Next.js App Router
+│   ├── auth/              # 认证相关页面
+│   ├── categories/        # 分类页面
+│   ├── post/             # 文章详情页
+│   ├── write/            # 写作页面
+│   └── layout.tsx        # 根布局
+├── components/           # React 组件
+│   ├── ui/              # 基础 UI 组件
+│   ├── toast/           # 提示组件
+│   └── *.tsx           # 功能组件
+├── lib/                 # 工具库
+│   ├── supabase/       # Supabase 配置
+│   └── auth-config.ts  # 认证配置
+└── public/             # 静态资源
+```
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+## 🛠️ 技术栈
 
-## Deploy to Vercel
+- **前端框架**: Next.js 14 (App Router)
+- **语言**: TypeScript
+- **样式**: Tailwind CSS
+- **数据库**: Supabase (PostgreSQL)
+- **认证**: Supabase Auth
+- **UI 组件**: shadcn/ui
+- **Markdown**: react-markdown + remark-gfm
+- **代码高亮**: react-syntax-highlighter
+- **图标**: Lucide React
 
-Vercel deployment will guide you through creating a Supabase account and project.
+## 🚀 快速开始
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+### 环境要求
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+- Node.js 18+ 
+- npm/yarn/pnpm
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+### 安装依赖
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+```bash
+npm install
+```
 
-## Clone and run locally
+### 环境配置
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+1. 复制环境变量文件：
+```bash
+cp .env.example .env.local
+```
 
-2. Create a Next.js app using the Supabase Starter template npx command
+2. 配置 Supabase 环境变量：
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+3. 配置认证设置（参考 `AUTH_CONFIG.md`）
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+### 运行开发服务器
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+```bash
+npm run dev
+```
 
-3. Use `cd` to change into the app's directory
+访问 [http://localhost:3000](http://localhost:3000) 查看应用。
 
-   ```bash
-   cd with-supabase-app
-   ```
+### 构建生产版本
 
-4. Rename `.env.example` to `.env.local` and update the following:
+```bash
+npm run build
+npm start
+```
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
+## 📝 使用说明
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+### 写作功能
 
-5. You can now run the Next.js local development server:
+1. 访问 `/write` 页面
+2. 填写文章信息（标题、日期、作者等）
+3. 使用 Markdown 编辑器编写内容
+4. 支持实时预览和语法高亮
+5. 点击保存按钮发布文章
 
-   ```bash
-   npm run dev
-   ```
+### 认证系统
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+- 支持邮箱密码登录
+- 支持 GitHub OAuth 登录
+- 可配置允许登录的用户列表
+- 支持密码重置功能
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+### 文章管理
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+- 支持文章分类和标签
+- 自动生成文章目录
+- 支持图片上传和预览
+- 响应式设计，适配各种设备
 
-## Feedback and issues
+## 🔧 配置说明
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+详细的认证配置说明请参考 [AUTH_CONFIG.md](./AUTH_CONFIG.md)
 
-## More Supabase examples
+## 📄 许可证
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+MIT License
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
