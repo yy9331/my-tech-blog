@@ -1,15 +1,35 @@
 'use client'
 import React from 'react';
 
-export type ViewMode = 'editor' | 'preview' | 'split';
+export type ViewMode = 'preview' | 'split' | 'save-and-preview';
 
 interface ViewModeTabsProps {
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
+  onPreviewPage?: () => void;
 }
 
-const ViewModeTabs: React.FC<ViewModeTabsProps> = ({ viewMode, onViewModeChange }) => {
-  const modes: ViewMode[] = ['editor', 'preview', 'split'];
+const ViewModeTabs: React.FC<ViewModeTabsProps> = ({ viewMode, onViewModeChange, onPreviewPage }) => {
+  const modes: ViewMode[] = ['preview', 'split', 'save-and-preview'];
+  
+  const handleModeClick = (mode: ViewMode) => {
+    if (mode === 'save-and-preview' && onPreviewPage) {
+      onPreviewPage();
+    } else {
+      onViewModeChange(mode);
+    }
+  };
+
+  const getModeLabel = (mode: ViewMode) => {
+    switch (mode) {
+      case 'preview':
+        return 'Preview';
+      case 'split':
+        return 'Split';
+      case 'save-and-preview':
+        return 'Save and Preview';
+    }
+  };
   
   return (
     <div className="flex space-x-4">
@@ -22,9 +42,9 @@ const ViewModeTabs: React.FC<ViewModeTabsProps> = ({ viewMode, onViewModeChange 
               ? 'bg-sky-700 text-white border-sky-500' 
               : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
           }`}
-          onClick={() => onViewModeChange(mode)}
+          onClick={() => handleModeClick(mode)}
         >
-          {mode.charAt(0).toUpperCase() + mode.slice(1)}
+          {getModeLabel(mode)}
         </button>
       ))}
     </div>

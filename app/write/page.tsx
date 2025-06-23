@@ -4,17 +4,21 @@ import { useEditor } from './context';
 import { useMobileDetection } from '@/lib/hooks/use-mobile-detection';
 import { useScrollSync } from '@/lib/hooks/use-scroll-sync';
 import { useSaveShortcut } from '@/lib/hooks/use-save-shortcut';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useArticleData } from '@/lib/hooks/use-article-data';
 import ViewModeTabs, { ViewMode } from '@/components/view-mode-tabs';
 import SaveButton from '@/components/save-button';
-import EditorView from './components/editor-view';
 import MarkdownPreview from './components/markdown-preview';
 import SplitView from './components/split-view';
 import FullScreenPreview from './components/full-screen-preview';
 import ImagePreview from '@/components/ui/image-preview';
 
 const MarkdownEditor: React.FC = () => {
-  const { content: markdown, setContent, isSaving } = useEditor();
+  const { content: markdown, setContent, isSaving, setIsSaving } = useEditor();
   const containerRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
   
   const [viewMode, setViewMode] = useState<ViewMode>('split');
   const [previewFull, setPreviewFull] = useState(false);
@@ -23,26 +27,57 @@ const MarkdownEditor: React.FC = () => {
   const { isMobile } = useMobileDetection();
   const { syncScroll } = useScrollSync();
   
+  const editSlug = searchParams.get('edit');
+  
+  const { articleData, handleSave } = useArticleData({
+    editSlug,
+    content: markdown,
+    setContent,
+    setIsSaving,
+  });
+  
   // 使用自定义 hook
   useSaveShortcut(containerRef);
 
-  // 处理内容变化
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
+  // 处理Preview Page - 先保存再跳转
+  const handlePreviewPage = async () => {
+    if (isSaving) return; // 如果正在保存，不执行操作
+    
+    setIsSaving(true);
+    
+    try {
+      // 创建一个模拟的form事件来触发保存
+      const mockEvent = {
+        preventDefault: () => {},
+      } as React.FormEvent;
+      
+      await handleSave(mockEvent);
+      
+      // 保存成功后跳转到预览页面
+      if (editSlug) {
+        router.push(`/post/${editSlug}`);
+      } else {
+        // 如果是新文章，需要等待保存完成后获取slug
+        // 这里可以添加一个延迟或者监听保存状态
+        setTimeout(() => {
+          if (articleData.title) {
+            // 使用标题生成一个临时的slug进行预览
+            const tempSlug = articleData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            router.push(`/post/${tempSlug}`);
+          }
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('保存失败:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // 处理图片点击
   const handleImageClick = (src: string) => {
     setPreviewImageUrl(src);
   };
-
-  // 渲染编辑器视图
-  const renderEditorView = () => (
-    <EditorView
-      content={markdown}
-      onContentChange={handleContentChange}
-    />
-  );
 
   // 渲染预览视图
   const renderPreviewView = () => (
@@ -55,7 +90,7 @@ const MarkdownEditor: React.FC = () => {
   const renderSplitView = () => (
     <SplitView
       content={markdown}
-      onContentChange={handleContentChange}
+      onContentChange={(e) => setContent(e.target.value)}
       onImageClick={handleImageClick}
       onEditorScroll={() => syncScroll('editor')}
       onPreviewScroll={() => syncScroll('preview')}
@@ -66,8 +101,6 @@ const MarkdownEditor: React.FC = () => {
   // 根据视图模式渲染内容
   const renderContent = () => {
     switch (viewMode) {
-      case 'editor':
-        return renderEditorView();
       case 'preview':
         return renderPreviewView();
       case 'split':
@@ -80,7 +113,11 @@ const MarkdownEditor: React.FC = () => {
   return (
     <div className="container mx-auto p-4" ref={containerRef}>
       <div className="flex justify-between items-center mb-4">
-        <ViewModeTabs viewMode={viewMode} onViewModeChange={setViewMode} />
+        <ViewModeTabs 
+          viewMode={viewMode} 
+          onViewModeChange={setViewMode} 
+          onPreviewPage={handlePreviewPage}
+        />
         {!isMobile && <SaveButton isSaving={isSaving} />}
       </div>
       
