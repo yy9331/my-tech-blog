@@ -60,8 +60,8 @@ const CollapsibleForm: React.FC<CollapsibleFormProps> = ({
         </svg>
       </button>
       <div
-        className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          collapsed ? 'max-h-0 opacity-0' : 'max-h-[800px] opacity-100'
+        className={`transition-all duration-500 ease-in-out ${
+          collapsed ? 'max-h-0 opacity-0 overflow-hidden' : 'max-h-[800px] opacity-100 overflow-visible'
         }`}
       >
         <ArticleForm
