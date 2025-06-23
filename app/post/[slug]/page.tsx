@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm';
 import ImagePreview from '@/components/ui/image-preview';
 import TableOfContents from '@/components/ui/table-of-contents';
 import CodeBlock from '@/components/code-block';
+import { formatPostDate } from '@/lib/utils';
 
 interface Post {
   id: number;
@@ -18,6 +19,7 @@ interface Post {
   date: string;
   readTime: number | null;
   tags: string[];
+  lastModified?: string | null;
 }
 
 interface NavigationPost {
@@ -270,11 +272,10 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
                   </>
                 )}
               </div>
-              <div className="flex items-center gap-4 text-gray-300">
-                <span>{post.date}</span>
-                {post.readTime && (
-                  <span>· {post.readTime} min read</span>
-                )}
+              <div className="text-sm text-gray-400 mt-2">
+                <span>发布于: {formatPostDate(post.date)}</span>
+                {post.readTime && <span> · {post.readTime} min read</span>}
+                {post.lastModified && <span> · 更新于: {formatPostDate(post.lastModified)}</span>}
               </div>
               <div className="flex flex-wrap gap-2 mt-4">
                 {post.tags?.map((tag) => (

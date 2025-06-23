@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { formatPostDate } from '@/lib/utils';
 
 interface Post {
   id: number;
@@ -12,6 +13,7 @@ interface Post {
   date: string;
   readTime: number | null;
   tags: string[];
+  lastModified?: string | null;
 }
 
 export default function PostList() {
@@ -27,7 +29,7 @@ export default function PostList() {
       const supabase = createClient();
       const { data, error } = await supabase
         .from('Post')
-        .select('id, slug, title, content, date, readTime, tags')
+        .select('id, slug, title, content, date, readTime, tags, lastModified')
         .order('date', { ascending: false })
         .range((pageNum - 1) * pageSize, pageNum * pageSize - 1);
 
@@ -74,10 +76,13 @@ export default function PostList() {
           >
             <article className="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform duration-300 group-hover:transform group-hover:scale-[1.02]">
               <div className="p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-sm text-gray-400">{post.date}</span>
+                <div className="flex items-center gap-2 mb-4 text-sm text-gray-400">
+                  <span>{formatPostDate(post.date)}</span>
                   {post.readTime && (
-                    <span className="text-sm text-gray-400">· {post.readTime} min read</span>
+                    <span>· {post.readTime} min read</span>
+                  )}
+                  {post.lastModified && (
+                    <span>· {formatPostDate(post.lastModified)}</span>
                   )}
                 </div>
                 <h2 className="text-xl font-semibold text-white mb-3 group-hover:text-sky-400 transition-colors">

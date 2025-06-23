@@ -142,6 +142,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving }: U
         tags: articleData.tags,
         content,
         readTime: articleData.readTime === '' ? null : articleData.readTime,
+        lastModified: new Date().toISOString(),
       }, {
         onConflict: 'slug'
       });
