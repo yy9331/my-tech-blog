@@ -7,10 +7,11 @@ interface ViewModeTabsProps {
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
   onPreviewPage?: () => void;
+  isEditing?: boolean;
 }
 
-const ViewModeTabs: React.FC<ViewModeTabsProps> = ({ viewMode, onViewModeChange, onPreviewPage }) => {
-  const modes: ViewMode[] = ['preview', 'split', 'save-and-preview'];
+const ViewModeTabs: React.FC<ViewModeTabsProps> = ({ viewMode, onViewModeChange, onPreviewPage, isEditing = false }) => {
+  const modes: ViewMode[] = isEditing ? ['preview', 'split', 'save-and-preview'] : ['preview', 'split'];
   
   const handleModeClick = (mode: ViewMode) => {
     if (mode === 'save-and-preview' && onPreviewPage) {

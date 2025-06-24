@@ -29,7 +29,7 @@ const MarkdownEditor: React.FC = () => {
   
   const editSlug = searchParams.get('edit');
   
-  const { articleData, handleSave } = useArticleData({
+  const { articleData, isEditing, handleSave } = useArticleData({
     editSlug,
     content: markdown,
     setContent,
@@ -117,6 +117,7 @@ const MarkdownEditor: React.FC = () => {
           viewMode={viewMode} 
           onViewModeChange={setViewMode} 
           onPreviewPage={handlePreviewPage}
+          isEditing={isEditing}
         />
         {!isMobile && <SaveButton isSaving={isSaving} />}
       </div>
