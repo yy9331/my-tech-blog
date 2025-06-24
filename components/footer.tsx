@@ -1,6 +1,17 @@
+'use client'
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const Footer = () => {
+  const pathname = usePathname();
+  
+  // 检查是否在 write 页面，如果是则隐藏 footer
+  const isWritePage = pathname === '/write' || pathname.startsWith('/write?');
+  
+  if (isWritePage) {
+    return null;
+  }
+
   return (
     <footer className="bg-gray-800 text-gray-300 py-8 mt-auto">
       <div className="container mx-auto px-6">
