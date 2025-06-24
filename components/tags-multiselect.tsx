@@ -102,7 +102,7 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder,
   return (
     <div ref={containerRef} className="relative w-full">
       <div
-        className="flex flex-wrap items-center gap-2 p-2 bg-gray-700 border border-gray-600 rounded-lg cursor-text min-h-[44px] focus-within:ring-2 focus-within:ring-sky-500"
+        className="flex flex-wrap items-center gap-2 p-2 bg-muted border border-border rounded-lg cursor-text min-h-[44px] focus-within:ring-2 focus-within:ring-sky-500"
         onClick={() => setOpen(true)}
       >
         {value.map((tag) => (
@@ -124,7 +124,7 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder,
           </span>
         ))}
         <input
-          className="flex-1 bg-transparent outline-none text-gray-200 placeholder-gray-400 min-w-[80px]"
+          className="flex-1 bg-transparent outline-none text-foreground placeholder-muted-foreground min-w-[80px]"
           value={input}
           onChange={e => setInput(e.target.value)}
           onFocus={() => setOpen(true)}
@@ -133,9 +133,9 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder,
         />
       </div>
       {open && (
-        <ul ref={dropdownRef} className="absolute z-50 left-0 right-0 bg-gray-800 border border-gray-600 rounded-b-lg mt-1 max-h-40 overflow-y-auto shadow-lg">
+        <ul ref={dropdownRef} className="absolute z-50 left-0 right-0 bg-card border border-border rounded-b-lg mt-1 max-h-40 overflow-y-auto shadow-lg">
           {loading ? (
-            <li className="flex justify-center items-center px-4 py-2 text-gray-400">
+            <li className="flex justify-center items-center px-4 py-2 text-muted-foreground">
               <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -146,7 +146,7 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder,
             filteredOptions.map((tag, index) => (
               <li
                 key={tag}
-                className={`px-4 py-2 cursor-pointer hover:bg-sky-600 hover:text-white text-gray-200 ${
+                className={`px-4 py-2 cursor-pointer hover:bg-sky-600 hover:text-white text-foreground ${
                   index === highlightedIndex ? 'bg-sky-600 text-white' : ''
                 }`}
                 onClick={() => handleSelectOption(tag)}
@@ -156,7 +156,7 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder,
               </li>
             ))
           ) : (
-            <li className="px-4 py-2 text-gray-400">
+            <li className="px-4 py-2 text-muted-foreground">
               {input.trim() ? '没有匹配的标签' : '没有可用标签'}。按回车键创建。
             </li>
           )}

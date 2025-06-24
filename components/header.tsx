@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { useState } from 'react';
+import ThemeSwitcher from './theme-switcher';
 
 const Header = () => {
   const { isLoggedIn, setIsLoggedIn, userEmail, userName, userAvatar } = useAuth();
@@ -57,11 +58,11 @@ const Header = () => {
       )}
       {/* 用户信息 */}
       <div className="hidden sm:block text-left">
-        <div className="text-white text-sm font-medium">
+        <div className="text-foreground text-sm font-medium">
           {userName || userEmail}
         </div>
         {userName && userEmail && (
-          <div className="text-gray-300 text-xs">
+          <div className="text-muted-foreground text-xs">
             {userEmail}
           </div>
         )}
@@ -69,7 +70,7 @@ const Header = () => {
       {/* 登出按钮 */}
       <button
         onClick={handleLogout}
-        className="px-3 py-1.5 bg-transparent border border-white text-white text-sm rounded-md hover:bg-white hover:text-sky-700 transition-colors"
+        className="px-3 py-1.5 bg-transparent border border-foreground text-foreground text-sm rounded-md hover:bg-foreground hover:text-background transition-colors"
       >
         登出
       </button>
@@ -84,7 +85,7 @@ const Header = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <header className={`bg-gray-800 shadow-lg transition-all duration-300 ${
+        <header className={`bg-card shadow-lg transition-all duration-300 ${
           isHovered ? 'translate-y-0' : '-translate-y-full'
         }`}>
           <div className="container mx-auto px-6 py-4">
@@ -101,13 +102,13 @@ const Header = () => {
               </Link>
               {/* 桌面端菜单 */}
               <div className="hidden md:flex items-center space-x-6">
-                <Link href="/" className="text-gray-300 hover:text-sky-400 transition-colors">
+                <Link href="/" className="text-muted-foreground hover:text-sky-400 transition-colors">
                   首页
                 </Link>
-                <Link href="/categories" className="text-gray-300 hover:text-sky-400 transition-colors">
+                <Link href="/categories" className="text-muted-foreground hover:text-sky-400 transition-colors">
                   分类
                 </Link>
-                <Link href="/write" className="text-gray-300 hover:text-sky-400 transition-colors">
+                <Link href="/write" className="text-muted-foreground hover:text-sky-400 transition-colors">
                   写文章
                 </Link>
                 {isLoggedIn ? (
@@ -120,22 +121,24 @@ const Header = () => {
                     登录
                   </button>
                 )}
+                {/* 主题切换按钮 */}
+                <ThemeSwitcher />
               </div>
               {/* 移动端三明治按钮 */}
               <button className="md:hidden flex flex-col justify-center items-center w-10 h-10" onClick={() => setMenuOpen(true)} aria-label="打开菜单">
-                <span className="block w-6 h-0.5 bg-white mb-1"></span>
-                <span className="block w-6 h-0.5 bg-white mb-1"></span>
-                <span className="block w-6 h-0.5 bg-white"></span>
+                <span className="block w-6 h-0.5 bg-foreground mb-1"></span>
+                <span className="block w-6 h-0.5 bg-foreground mb-1"></span>
+                <span className="block w-6 h-0.5 bg-foreground"></span>
               </button>
             </nav>
           </div>
           {/* 移动端全屏菜单 */}
           {menuOpen && (
-            <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex flex-col items-center justify-center md:hidden">
-              <button className="absolute top-6 right-6 text-white text-3xl" onClick={() => setMenuOpen(false)} aria-label="关闭菜单">×</button>
-              <button className="w-3/4 py-4 text-2xl text-white font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/')}>首页</button>
-              <button className="w-3/4 py-4 text-2xl text-white font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/categories')}>分类</button>
-              <button className="w-3/4 py-4 text-2xl text-white font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>写文章</button>
+            <div className="fixed inset-0 bg-background/95 z-50 flex flex-col items-center justify-center md:hidden">
+              <button className="absolute top-6 right-6 text-foreground text-3xl" onClick={() => setMenuOpen(false)} aria-label="关闭菜单">×</button>
+              <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/')}>首页</button>
+              <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/categories')}>分类</button>
+              <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>写文章</button>
               {isLoggedIn ? (
                 <div className="w-3/4 flex flex-col items-center space-y-4">
                   {/* 移动端用户信息 */}
@@ -154,11 +157,11 @@ const Header = () => {
                       </div>
                     )}
                     <div className="text-left">
-                      <div className="text-white text-lg font-medium">
+                      <div className="text-foreground text-lg font-medium">
                         {userName || userEmail}
                       </div>
                       {userName && userEmail && (
-                        <div className="text-gray-300 text-sm">
+                        <div className="text-muted-foreground text-sm">
                           {userEmail}
                         </div>
                       )}
@@ -166,7 +169,7 @@ const Header = () => {
                   </div>
                   <button
                     onClick={() => { setMenuOpen(false); handleLogout(); }}
-                    className="w-full py-3 text-lg text-white rounded-lg bg-transparent border border-white hover:bg-white hover:text-sky-700"
+                    className="w-full py-3 text-lg text-foreground rounded-lg bg-transparent border border-foreground hover:bg-foreground hover:text-background"
                   >登出</button>
                 </div>
               ) : (
@@ -175,6 +178,10 @@ const Header = () => {
                   className="w-3/4 py-3 text-lg text-white rounded-lg bg-sky-600 hover:bg-sky-500"
                 >登录</button>
               )}
+              {/* 移动端主题切换按钮 */}
+              <div className="w-3/4 mt-4 flex justify-center">
+                <ThemeSwitcher />
+              </div>
             </div>
           )}
         </header>
@@ -184,7 +191,7 @@ const Header = () => {
 
   // 普通页面的 header
   return (
-    <header className="fixed top-0 left-0 right-0 bg-gray-800 shadow-lg z-50">
+    <header className="fixed top-0 left-0 right-0 bg-card dark:bg-card shadow-lg z-50">
       <div className="container mx-auto px-6 py-4">
         <nav className="flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold text-sky-400 hover:text-sky-300 transition-colors">
@@ -199,13 +206,13 @@ const Header = () => {
           </Link>
           {/* 桌面端菜单 */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link href="/" className="text-gray-300 hover:text-sky-400 transition-colors">
+            <Link href="/" className="text-muted-foreground hover:text-sky-400 transition-colors">
               首页
             </Link>
-            <Link href="/categories" className="text-gray-300 hover:text-sky-400 transition-colors">
+            <Link href="/categories" className="text-muted-foreground hover:text-sky-400 transition-colors">
               分类
             </Link>
-            <Link href="/write" className="text-gray-300 hover:text-sky-400 transition-colors">
+            <Link href="/write" className="text-muted-foreground hover:text-sky-400 transition-colors">
               写文章
             </Link>
             {isLoggedIn ? (
@@ -218,22 +225,24 @@ const Header = () => {
                 登录
               </button>
             )}
+            {/* 主题切换按钮 */}
+            <ThemeSwitcher />
           </div>
           {/* 移动端三明治按钮 */}
           <button className="md:hidden flex flex-col justify-center items-center w-10 h-10" onClick={() => setMenuOpen(true)} aria-label="打开菜单">
-            <span className="block w-6 h-0.5 bg-white mb-1"></span>
-            <span className="block w-6 h-0.5 bg-white mb-1"></span>
-            <span className="block w-6 h-0.5 bg-white"></span>
+            <span className="block w-6 h-0.5 bg-foreground mb-1"></span>
+            <span className="block w-6 h-0.5 bg-foreground mb-1"></span>
+            <span className="block w-6 h-0.5 bg-foreground"></span>
           </button>
         </nav>
       </div>
       {/* 移动端全屏菜单 */}
       {menuOpen && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex flex-col items-center justify-center md:hidden">
-          <button className="absolute top-6 right-6 text-white text-3xl" onClick={() => setMenuOpen(false)} aria-label="关闭菜单">×</button>
-          <button className="w-3/4 py-4 text-2xl text-white font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/')}>首页</button>
-          <button className="w-3/4 py-4 text-2xl text-white font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/categories')}>分类</button>
-          <button className="w-3/4 py-4 text-2xl text-white font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>写文章</button>
+        <div className="fixed inset-0 bg-background/95 z-50 flex flex-col items-center justify-center md:hidden">
+          <button className="absolute top-6 right-6 text-foreground text-3xl" onClick={() => setMenuOpen(false)} aria-label="关闭菜单">×</button>
+          <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/')}>首页</button>
+          <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/categories')}>分类</button>
+          <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>写文章</button>
           {isLoggedIn ? (
             <div className="w-3/4 flex flex-col items-center space-y-4">
               {/* 移动端用户信息 */}
@@ -252,11 +261,11 @@ const Header = () => {
                   </div>
                 )}
                 <div className="text-left">
-                  <div className="text-white text-lg font-medium">
+                  <div className="text-foreground text-lg font-medium">
                     {userName || userEmail}
                   </div>
                   {userName && userEmail && (
-                    <div className="text-gray-300 text-sm">
+                    <div className="text-muted-foreground text-sm">
                       {userEmail}
                     </div>
                   )}
@@ -264,7 +273,7 @@ const Header = () => {
               </div>
               <button
                 onClick={() => { setMenuOpen(false); handleLogout(); }}
-                className="w-full py-3 text-lg text-white rounded-lg bg-transparent border border-white hover:bg-white hover:text-sky-700"
+                className="w-full py-3 text-lg text-foreground rounded-lg bg-transparent border border-foreground hover:bg-foreground hover:text-background"
               >登出</button>
             </div>
           ) : (
@@ -273,6 +282,10 @@ const Header = () => {
               className="w-3/4 py-3 text-lg text-white rounded-lg bg-sky-600 hover:bg-sky-500"
             >登录</button>
           )}
+          {/* 移动端主题切换按钮 */}
+          <div className="w-3/4 mt-4 flex justify-center">
+            <ThemeSwitcher />
+          </div>
         </div>
       )}
     </header>

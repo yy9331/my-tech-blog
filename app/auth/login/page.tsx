@@ -8,7 +8,7 @@ export default async function Page({
   const params = await searchParams;
   
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6 md:p-10">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
         <LoginForm error={params.error} />
       </div>

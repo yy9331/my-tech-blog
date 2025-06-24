@@ -49,7 +49,7 @@ export default function CategoriesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center text-gray-100">
+      <div className="min-h-screen bg-background flex justify-center items-center text-foreground pt-[66px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
       </div>
     );
@@ -57,31 +57,31 @@ export default function CategoriesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center text-gray-100">
+      <div className="min-h-screen bg-background flex justify-center items-center text-foreground pt-[66px]">
         <p className="text-xl text-red-500">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 py-8">
+    <div className="min-h-screen bg-background text-foreground py-8 pt-24">
       <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-8 text-white">文章分类</h1>
+        <h1 className="text-3xl font-bold mb-8 text-foreground">文章分类</h1>
         
         {tags.length === 0 ? (
-          <p className="text-gray-400">暂无分类。</p>
+          <p className="text-muted-foreground">暂无分类。</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tags.map((tagData) => (
               <Link 
                 href={`/categories/${tagData.tag}`}
                 key={tagData.tag}
-                className="block p-6 bg-gray-800 rounded-lg shadow-lg hover:bg-gray-700 transition-colors duration-300 group"
+                className="block p-6 bg-card rounded-lg shadow-lg hover:bg-accent transition-colors duration-300 group"
               >
                 <h2 className="text-xl font-semibold text-sky-400 mb-2 group-hover:text-sky-300">
                   {tagData.tag}
                 </h2>
-                <p className="text-gray-400 text-sm">共 {tagData.count} 篇文章</p>
+                <p className="text-muted-foreground text-sm">共 {tagData.count} 篇文章</p>
               </Link>
             ))}
           </div>

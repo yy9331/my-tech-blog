@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import ReactMarkdown, { Components } from 'react-markdown';
@@ -42,6 +42,10 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
 
   const resolvedParams = use(params);
   const slug = resolvedParams.slug;
+  const pathname = usePathname();
+
+  // 判断是否为 /write 页面
+  const isWritePage = pathname === '/write' || pathname.startsWith('/write?');
 
   // 自定义标题渲染器，为标题添加ID
   const createHeadingRenderer = (level: number) => {
@@ -200,7 +204,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center">
+      <div className="min-h-screen bg-background flex justify-center items-center pt-[66px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
       </div>
     );
@@ -208,9 +212,9 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
 
   if (error || !post) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center">
+      <div className="min-h-screen bg-background flex justify-center items-center pt-[66px]">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-100">{error || '文章未找到'}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{error || '文章未找到'}</h1>
           <button
             onClick={() => router.push('/')}
             className="mt-4 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors"
@@ -223,24 +227,16 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 py-8">
+    <div className={`min-h-screen bg-background text-foreground py-8 ${isWritePage ? 'pt-8' : 'pt-[120px]'}`}>
       <div className="container mx-auto px-4">
-        {/* 返回按钮 */}
-        <button
-          onClick={() => router.push('/')}
-          className="mb-8 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors"
-        >
-          返回首页
-        </button>
-
         {/* 文章内容 - 为固定目录留出空间 */}
         <div className={`transition-all duration-300 ${
           isMobile ? '' : isTocCollapsed ? 'ml-20' : 'ml-80'
         }`}>
-          <article className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg p-8">
+          <article className="max-w-4xl mx-auto bg-card rounded-lg shadow-lg p-8">
             <header className="mb-8">
               <div className="flex justify-between items-start">
-                <h1 className="text-4xl font-bold text-white mb-4">
+                <h1 className="text-4xl font-bold text-foreground mb-4">
                   {post.title}
                 </h1>
                 {isAuthorized && (
@@ -272,7 +268,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
                   </>
                 )}
               </div>
-              <div className="text-sm text-gray-400 mt-2">
+              <div className="text-sm text-muted-foreground mt-2">
                 <span>发布于: {formatPostDate(post.date)}</span>
                 {post.readTime && <span> · {post.readTime} min read</span>}
                 {post.lastModified && <span> · 更新于: {formatPostDate(post.lastModified)}</span>}
@@ -281,7 +277,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
                 {post.tags?.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 text-sm font-medium bg-sky-900/50 text-sky-300 rounded-full"
+                    className="px-3 py-1 text-sm font-medium rounded-full bg-[hsl(var(--tag-bg))] text-[hsl(var(--tag-fg))] dark:bg-sky-900/50 dark:text-sky-300"
                   >
                     {tag}
                   </span>
@@ -289,7 +285,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
               </div>
             </header>
 
-            <div className="prose dark:prose-invert max-w-none prose-headings:text-white prose-p:text-gray-200 prose-strong:text-white prose-em:text-gray-200 prose-blockquote:text-gray-300 prose-li:text-gray-200 prose-a:text-sky-400 hover:prose-a:text-sky-300">
+            <div className="prose dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-em:text-muted-foreground prose-blockquote:text-muted-foreground prose-li:text-muted-foreground prose-a:text-sky-400 hover:prose-a:text-sky-300">
               <ReactMarkdown
                 components={{ 
                   code: CodeBlock as Components['code'], 
@@ -320,14 +316,14 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
             {prevPost ? (
               <Link
                 href={`/post/${prevPost.slug}`}
-                className="flex-1 p-4 bg-gray-800 rounded-lg shadow-md hover:bg-gray-700 transition-colors duration-300 group flex items-center justify-between"
+                className="flex-1 p-4 bg-card rounded-lg shadow-md hover:bg-accent transition-colors duration-300 group flex items-center justify-between"
               >
-                <svg className="w-5 h-5 text-gray-300 group-hover:text-sky-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-5 h-5 text-muted-foreground group-hover:text-sky-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
                 <div className="text-left flex-1">
-                  <div className="text-sm text-gray-300 group-hover:text-sky-400">上一篇</div>
-                  <div className="mt-1 font-semibold text-gray-100 group-hover:text-sky-300">{prevPost.title}</div>
+                  <div className="text-sm text-muted-foreground group-hover:text-sky-400">上一篇</div>
+                  <div className="mt-1 font-semibold text-foreground group-hover:text-sky-300">{prevPost.title}</div>
                 </div>
               </Link>
             ) : (
@@ -336,13 +332,13 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
             {nextPost ? (
               <Link
                 href={`/post/${nextPost.slug}`}
-                className="flex-1 p-4 bg-gray-800 rounded-lg shadow-md hover:bg-gray-700 transition-colors duration-300 group flex items-center justify-between text-right"
+                className="flex-1 p-4 bg-card rounded-lg shadow-md hover:bg-accent transition-colors duration-300 group flex items-center justify-between text-right"
               >
                 <div className="text-right flex-1">
-                  <div className="text-sm text-gray-300 group-hover:text-sky-400">下一篇</div>
-                  <div className="mt-1 font-semibold text-gray-100 group-hover:text-sky-300">{nextPost.title}</div>
+                  <div className="text-sm text-muted-foreground group-hover:text-sky-400">下一篇</div>
+                  <div className="mt-1 font-semibold text-foreground group-hover:text-sky-300">{nextPost.title}</div>
                 </div>
-                <svg className="w-5 h-5 text-gray-300 group-hover:text-sky-400 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-5 h-5 text-muted-foreground group-hover:text-sky-400 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
                 </svg>
               </Link>

@@ -13,7 +13,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-gray-800 text-gray-300 py-8 mt-auto">
+    <footer className="bg-card dark:bg-card dark:[background-color:initial] text-muted-foreground py-8 mt-[30px]">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
@@ -50,7 +50,7 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        <div className="border-t border-gray-700 mt-8 pt-6 text-center text-sm">
+        <div className="border-t border-border mt-8 pt-6 text-center text-sm">
           <p>© {new Date().getFullYear()} My Tech Blog. All rights reserved.</p>
         </div>
       </div>

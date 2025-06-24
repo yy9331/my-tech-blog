@@ -29,32 +29,107 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    
+    /* 主题切换相关变量 */
+    --icon-fill: hsl(0 0% 10%);
+    --icon-fill-hover: hsl(0 0% 0%);
   }
+  
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 222 47% 11%;      /* gray-900 */
+    --foreground: 220 14% 96%;      /* gray-100 */
+    --card: 222 47% 17%;            /* gray-800 */
+    --card-foreground: 220 14% 96%; /* gray-100 */
+    --popover: 222 47% 17%;         /* gray-800 */
+    --popover-foreground: 220 14% 96%; /* gray-100 */
+    --primary: 210 100% 66%;        /* sky-400 */
+    --primary-foreground: 222 47% 11%; /* gray-900 */
+    --secondary: 217 19% 27%;       /* gray-700 */
+    --secondary-foreground: 220 14% 96%; /* gray-100 */
+    --muted: 215 28% 17%;           /* gray-800 */
+    --muted-foreground: 220 8% 60%; /* gray-400 */
+    --accent: 215 28% 17%;          /* gray-800 */
+    --accent-foreground: 210 100% 66%; /* sky-400 */
+    --destructive: 0 84.2% 60.2%;   /* red-500 */
+    --destructive-foreground: 220 14% 96%; /* gray-100 */
+    --border: 215 28% 17%;          /* gray-800 */
+    --input: 215 28% 17%;           /* gray-800 */
+    --ring: 210 100% 66%;           /* sky-400 */
+    --chart-1: 210 100% 66%;        /* sky-400 */
+    --chart-2: 217 19% 27%;         /* gray-700 */
+    --chart-3: 222 47% 17%;         /* gray-800 */
+    --chart-4: 220 8% 60%;          /* gray-400 */
+    --chart-5: 0 84.2% 60.2%;       /* red-500 */
+    --tag-bg: 210 40% 25%;          /* 深色标签背景，sky-900风格 */
+    --tag-fg: 207 90% 60%;  /* 深色标签字体，浅蓝色 */
+    
+    /* 主题切换相关变量 */
+    --icon-fill: hsl(0 0% 100%);
+    --icon-fill-hover: hsl(0 0% 100%);
+  }
+  
+  /* 浅色主题 - 使用更柔和的颜色 */
+  [data-theme="light"] {
+    --background: 40 100% 97.1%; /* 米白色 rgb(255,250,240) */
+    --header: 40 44% 96%; /* header 柔和米色 */
+    --tag-bg: 207 89% 95%; /* 标签淡蓝色背景 */
+    --tag-fg: 207 90% 44%; /* 标签深蓝色字体 */
+    --foreground: 0 0% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 15%;
+    --primary: 0 0% 15%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 15%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 15%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 15%;
+    
+    /* 主题切换相关变量 */
+    --icon-fill: hsl(0 0% 15%);
+    --icon-fill-hover: hsl(0 0% 0%);
+  }
+  
+  /* 深色主题 */
+  [data-theme="dark"] {
+    --background: 222 47% 11%;      /* gray-900 */
+    --foreground: 220 14% 96%;      /* gray-100 */
+    --card: 222 47% 17%;            /* gray-800 */
+    --card-foreground: 220 14% 96%; /* gray-100 */
+    --popover: 222 47% 17%;         /* gray-800 */
+    --popover-foreground: 220 14% 96%; /* gray-100 */
+    --primary: 210 100% 66%;        /* sky-400 */
+    --primary-foreground: 222 47% 11%; /* gray-900 */
+    --secondary: 217 19% 27%;       /* gray-700 */
+    --secondary-foreground: 220 14% 96%; /* gray-100 */
+    --muted: 215 28% 17%;           /* gray-800 */
+    --muted-foreground: 220 8% 60%; /* gray-400 */
+    --accent: 215 28% 17%;          /* gray-800 */
+    --accent-foreground: 210 100% 66%; /* sky-400 */
+    --destructive: 0 84.2% 60.2%;   /* red-500 */
+    --destructive-foreground: 220 14% 96%; /* gray-100 */
+    --border: 215 28% 17%;          /* gray-800 */
+    --input: 215 28% 17%;           /* gray-800 */
+    --ring: 210 100% 66%;           /* sky-400 */
+    --chart-1: 210 100% 66%;        /* sky-400 */
+    --chart-2: 217 19% 27%;         /* gray-700 */
+    --chart-3: 222 47% 17%;         /* gray-800 */
+    --chart-4: 220 8% 60%;          /* gray-400 */
+    --chart-5: 0 84.2% 60.2%;       /* red-500 */
+    --tag-bg: 210 40% 25%;          /* 深色标签背景，sky-900风格 */
+    --tag-fg: 207 90% 60%;  /* 深色标签字体，浅蓝色 */
+    
+    /* 主题切换相关变量 */
+    --icon-fill: hsl(0 0% 100%);
+    --icon-fill-hover: hsl(0 0% 100%);
   }
 }
 
@@ -68,6 +143,83 @@
 }
 
 @layer components {
+  /* 主题切换动画样式 */
+  .sun-and-moon > :is(.moon, .sun, .sun-beams) {
+    transform-origin: center;
+  }
+
+  .sun-and-moon > :is(.moon, .sun) {
+    fill: var(--icon-fill);
+  }
+
+  .theme-toggle:is(:hover, :focus-visible) > .sun-and-moon > :is(.moon, .sun) {
+    fill: var(--icon-fill-hover);
+  }
+
+  .sun-and-moon > .sun-beams {
+    stroke: var(--icon-fill);
+    stroke-width: 2px;
+  }
+
+  .theme-toggle:is(:hover, :focus-visible) .sun-and-moon > .sun-beams {
+    stroke: var(--icon-fill-hover);
+  }
+
+  [data-theme="dark"] .sun-and-moon > .sun {
+    transform: scale(1.75);
+  }
+
+  [data-theme="dark"] .sun-and-moon > .sun-beams {
+    opacity: 0;
+  }
+
+  [data-theme="dark"] .sun-and-moon > .moon > circle {
+    transform: translateX(-7px);
+  }
+
+  @supports (cx: 1) {
+    [data-theme="dark"] .sun-and-moon > .moon > circle {
+      cx: 17;
+      transform: translateX(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sun-and-moon > .sun {
+      transition: transform .5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .sun-and-moon > .sun-beams {
+      transition: transform .5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity .5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sun-and-moon .moon > circle {
+      transition: transform .25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @supports (cx: 1) {
+      .sun-and-moon .moon > circle {
+        transition: cx .25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    }
+
+    [data-theme="dark"] .sun-and-moon > .sun {
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: .25s;
+      transform: scale(1.75);
+    }
+
+    [data-theme="dark"] .sun-and-moon > .sun-beams {
+      transition-duration: .15s;
+      transform: rotateZ(-25deg);
+    }
+
+    [data-theme="dark"] .sun-and-moon > .moon > circle {
+      transition-duration: .5s;
+      transition-delay: .25s;
+    }
+  }
+
   /* 目录组件样式 */
   .toc {
     @apply bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 border border-gray-700/50;

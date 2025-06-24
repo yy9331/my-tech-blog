@@ -24,7 +24,7 @@ export default function RootLayout({
         <AuthProvider>
           <ToastProvider>
             <Header />
-            <main>
+            <main className="min-h-screen bg-background">
               {children}
             </main>
             <Footer />

@@ -37,50 +37,50 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
   onNewTagCreated,
 }) => {
   return (
-    <div className="p-6 bg-gray-800 rounded-b-lg">
+    <div className="p-6 bg-card rounded-b-lg">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-gray-300 mb-1">标题</label>
+          <label className="block text-muted-foreground mb-1">标题</label>
           <input
             type="text"
             value={title}
             onChange={e => onTitleChange(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
+            className="w-full p-3 rounded-lg bg-muted border border-border text-foreground focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
             placeholder="请输入文章标题"
           />
         </div>
         <div>
-          <label className="block text-gray-300 mb-1">日期</label>
+          <label className="block text-muted-foreground mb-1">日期</label>
           <input
             type="date"
             value={date}
             onChange={e => onDateChange(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
+            className="w-full p-3 rounded-lg bg-muted border border-border text-foreground focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
           />
         </div>
         <div>
-          <label className="block text-gray-300 mb-1">作者</label>
+          <label className="block text-muted-foreground mb-1">作者</label>
           <input
             type="text"
             value={author}
             onChange={e => onAuthorChange(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
+            className="w-full p-3 rounded-lg bg-muted border border-border text-foreground focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
             placeholder="请输入作者名"
           />
         </div>
         <div>
-          <label className="block text-gray-300 mb-1">预计阅读时间(分钟)</label>
+          <label className="block text-muted-foreground mb-1">预计阅读时间(分钟)</label>
           <input
             type="number"
             min={1}
             value={readTime}
             onChange={e => onReadTimeChange(e.target.value === '' ? '' : Number(e.target.value))}
-            className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
+            className="w-full p-3 rounded-lg bg-muted border border-border text-foreground focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-colors"
             placeholder="如：5"
           />
         </div>
         <div className="md:col-span-2">
-          <label className="block text-gray-300 mb-1">标签</label>
+          <label className="block text-muted-foreground mb-1">标签</label>
           <TagsMultiSelect
             options={availableTags}
             value={tags}

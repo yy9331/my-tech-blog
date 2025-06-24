@@ -89,13 +89,13 @@ const ImageUploader = ({ editSlug }: ImageUploaderProps) => {
 
   return (
     <div>
-      <label className="block text-gray-300 mb-1">上传图片</label>
+      <label className="block text-muted-foreground mb-1">上传图片</label>
       <div className="flex items-center gap-4">
         <button
           type="button"
           onClick={triggerFileSelect}
           disabled={uploading}
-          className="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-500 transition-colors disabled:bg-gray-500"
+          className="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-500 transition-colors disabled:bg-muted"
         >
           {uploading ? '上传中...' : '选择文件'}
         </button>
@@ -110,8 +110,8 @@ const ImageUploader = ({ editSlug }: ImageUploaderProps) => {
       </div>
       
       {uploadedUrl && (
-        <div className="mt-4 p-3 bg-gray-700 rounded-lg flex items-center justify-between">
-          <p className="text-sm text-gray-200 truncate">
+        <div className="mt-4 p-3 bg-muted rounded-lg flex items-center justify-between">
+          <p className="text-sm text-foreground truncate">
             <span className="font-semibold text-green-400">上传成功:</span> {`![alt text](${uploadedUrl})`}
           </p>
           <button

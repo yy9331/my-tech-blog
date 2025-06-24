@@ -81,7 +81,7 @@ const MarkdownEditor: React.FC = () => {
 
   // 渲染预览视图
   const renderPreviewView = () => (
-    <div className="w-full p-4 border border-gray-300 rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600">
+    <div className="w-full p-4 border border-border rounded-lg bg-card text-foreground">
       <MarkdownPreview content={markdown} onImageClick={handleImageClick} />
     </div>
   );
@@ -125,7 +125,7 @@ const MarkdownEditor: React.FC = () => {
       {isMobile && <SaveButton isSaving={isSaving} isMobile />}
       
       {/* 编辑器内容区域 */}
-      <div className="bg-gray-800 rounded-lg shadow-xl">
+      <div className="bg-card rounded-lg shadow-xl">
         {renderContent()}
       </div>
 

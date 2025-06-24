@@ -175,17 +175,17 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
         </button>
 
         {/* 展开的目录内容 */}
-        <div className={`absolute bottom-16 right-0 w-72 bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700/50 transition-all duration-300 ${
+        <div className={`absolute bottom-16 right-0 w-72 bg-card/95 backdrop-blur-sm rounded-lg shadow-xl border border-border/50 transition-all duration-300 ${
           isExpanded || isHovered ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'
         }`}>
           <div className="p-4">
-            <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-200">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-border">
+              <h3 className="text-sm font-semibold text-foreground">
                 目录
               </h3>
               <button
                 onClick={() => setIsExpanded(false)}
-                className="p-1 text-gray-400 hover:text-gray-200 transition-colors"
+                className="p-1 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label="收起目录"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,10 +203,14 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
                     }}
                     className={`w-full text-left px-2 py-1 rounded text-xs transition-colors ${
                       activeId === item.id
-                        ? 'text-sky-400 bg-sky-900/30 border-l-2 border-sky-400'
-                        : 'text-gray-300 hover:text-sky-300 hover:bg-gray-700/50'
+                        ? ''
+                        : 'text-muted-foreground hover:text-sky-300 hover:bg-accent/50'
                     }`}
-                    style={{ paddingLeft: `${(item.level - 1) * 8 + 8}px` }}
+                    style={activeId === item.id ? {
+                      backgroundColor: 'hsl(var(--tag-bg))',
+                      color: 'hsl(var(--tag-fg))',
+                      borderLeft: '2px solid hsl(var(--tag-fg))',
+                    } : { paddingLeft: `${(item.level - 1) * 8 + 8}px` }}
                   >
                     {item.text}
                   </button>
@@ -231,7 +235,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
       {/* 收缩/展开按钮 */}
       <button
         onClick={() => handleCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-2 w-6 h-6 bg-sky-600 hover:bg-sky-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
+        className="absolute -right-3 top-2 w-6 h-6 bg-sky-600 hover:bg-sky-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-50 mt-[38px]"
         aria-label={isCollapsed ? '展开目录' : '收起目录'}
       >
         <svg 
@@ -245,10 +249,10 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
       </button>
 
       {/* 目录内容 */}
-      <div className={`bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700/50 p-4 transition-all duration-300 ${
+      <div className={`bg-card/95 backdrop-blur-sm rounded-lg shadow-xl border border-border/50 p-4 transition-all duration-300 mt-[38px] ${
         isCollapsed ? 'opacity-0 invisible' : 'opacity-100 visible'
       }`}>
-        <h3 className="text-lg font-semibold text-gray-200 mb-4 pb-2 border-b border-gray-700">
+        <h3 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
           目录
         </h3>
         <ul className="overflow-y-auto space-y-1" style={{ maxHeight: 'calc(100vh - 10rem)' }}>
@@ -259,7 +263,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
                 className={`w-full text-left px-2 py-1 rounded text-sm transition-colors ${
                   activeId === item.id
                     ? 'text-sky-400 bg-sky-900/30 border-l-2 border-sky-400'
-                    : 'text-gray-300 hover:text-sky-300 hover:bg-gray-700/50'
+                    : 'text-muted-foreground hover:text-sky-300 hover:bg-accent/50'
                 }`}
                 style={{ paddingLeft: `${(item.level - 1) * 12 + 8}px` }}
               >
@@ -274,8 +278,8 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
       <div className={`absolute top-4 left-4 transition-all duration-300 ${
         isCollapsed ? 'opacity-100 visible' : 'opacity-0 invisible'
       }`}>
-        <div className="w-12 h-12 bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700/50 flex items-center justify-center">
-          <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="w-12 h-12 bg-card/95 backdrop-blur-sm rounded-lg shadow-xl border border-border/50 flex items-center justify-center">
+          <svg className="w-6 h-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
           </svg>
         </div>

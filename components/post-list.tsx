@@ -66,7 +66,7 @@ export default function PostList() {
   };
 
   return (
-    <div>
+    <div className='pt-[120px]'>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {posts.map((post) => (
           <Link 
@@ -74,9 +74,9 @@ export default function PostList() {
             className="block group"
             key={post.slug}
           >
-            <article className="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform duration-300 group-hover:transform group-hover:scale-[1.02]">
+            <article className="bg-card rounded-lg overflow-hidden shadow-lg transition-transform duration-300 group-hover:transform group-hover:scale-[1.02]">
               <div className="p-6">
-                <div className="flex items-center gap-2 mb-4 text-sm text-gray-400">
+                <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
                   <span>{formatPostDate(post.date)}</span>
                   {post.readTime && (
                     <span>· {post.readTime} min read</span>
@@ -85,17 +85,17 @@ export default function PostList() {
                     <span>· {formatPostDate(post.lastModified)}</span>
                   )}
                 </div>
-                <h2 className="text-xl font-semibold text-white mb-3 group-hover:text-sky-400 transition-colors">
+                <h2 className="text-xl font-semibold text-foreground mb-3 group-hover:text-sky-400 transition-colors">
                   {post.title}
                 </h2>
-                <p className="text-gray-400 line-clamp-3 mb-4">
+                <p className="text-muted-foreground line-clamp-3 mb-4">
                   {post.content.substring(0, 150)}...
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {post.tags?.map((tag: string) => (
                     <span 
                       key={tag}
-                      className="px-2 py-1 text-xs font-medium bg-sky-900/50 text-sky-400 rounded-full"
+                      className="px-2 py-1 text-xs font-medium rounded-full bg-[hsl(var(--tag-bg))] text-[hsl(var(--tag-fg))] dark:bg-sky-900/50 dark:text-sky-400"
                     >
                       {tag}
                     </span>
@@ -115,7 +115,7 @@ export default function PostList() {
         >
           {'<'}
         </button>
-        <span className="text-gray-400">第 {page} 页</span>
+        <span className="text-muted-foreground">第 {page} 页</span>
         <button
           onClick={handleNextPage}
           disabled={!hasMore || loading}

@@ -34,7 +34,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({
   };
 
   return (
-    <div className={`prose dark:prose-invert max-w-none ${className}`}>
+    <div className={`prose dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-em:text-muted-foreground prose-blockquote:text-muted-foreground prose-li:text-muted-foreground prose-a:text-sky-400 hover:prose-a:text-sky-300 ${className}`}>
       <ReactMarkdown
         components={components}
         remarkPlugins={[remarkGfm]}

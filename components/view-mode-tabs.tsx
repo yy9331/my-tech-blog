@@ -41,7 +41,7 @@ const ViewModeTabs: React.FC<ViewModeTabsProps> = ({ viewMode, onViewModeChange,
           className={`px-4 py-2 border rounded transition-colors ${
             viewMode === mode 
               ? 'bg-sky-700 text-white border-sky-500' 
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              : 'bg-card text-foreground border-border hover:bg-accent'
           }`}
           onClick={() => handleModeClick(mode)}
         >

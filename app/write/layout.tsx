@@ -31,7 +31,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto pt-8">
         <form onSubmit={handleSave}>
           <CollapsibleForm
@@ -54,7 +54,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
             onNewTagCreated={handleNewTagCreatedWithUpdate}
           />
           {/* markdown 编辑器内容区 */}
-          <div className="bg-gray-800 rounded-lg shadow-xl">
+          <div className="bg-card rounded-lg shadow-xl">
             {children}
           </div>
         </form>
@@ -65,7 +65,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
 
 const WriteLayout = ({ children }: WriteLayoutProps) => (
   <EditorProvider>
-    <Suspense fallback={<div className="min-h-screen bg-gray-900 flex items-center justify-center">
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-sky-400 text-xl">加载中...</div>
     </div>}>
       <WriteLayoutContent>{children}</WriteLayoutContent>

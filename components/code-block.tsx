@@ -18,7 +18,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ className, children, inline, ...p
   // 如果是行内代码（inline 为 true 或者没有 className），使用行内样式
   if (inline || !className) {
     return (
-      <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm font-mono before:content-[''] after:content-['']" {...props}>
+      <code className="bg-muted px-1 py-0.5 rounded text-sm font-mono before:content-[''] after:content-['']" {...props}>
         {codeContent}
       </code>
     );
@@ -26,7 +26,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ className, children, inline, ...p
 
   // 如果是块级代码块，使用语法高亮
   return (
-    <div className="my-4 rounded-md border border-gray-700/50 overflow-hidden">
+    <div className="my-4 rounded-md border border-border overflow-hidden">
       <SyntaxHighlighter
         language={language}
         style={vscDarkPlus}

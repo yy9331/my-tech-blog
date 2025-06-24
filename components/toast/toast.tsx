@@ -46,12 +46,12 @@ const Toast: React.FC<ToastProps> = ({ message, type, onDismiss }) => {
   
   return (
     <div
-      className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white min-w-[250px] max-w-sm ${animationClasses}`}
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border border-border bg-card text-foreground min-w-[250px] max-w-sm ${animationClasses}`}
       style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
     >
       {icons[type]}
       <span className="text-base font-medium flex-1">{message}</span>
-       <button onClick={handleDismiss} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+       <button onClick={handleDismiss} className="text-muted-foreground hover:text-foreground">
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
