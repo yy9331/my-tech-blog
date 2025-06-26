@@ -257,4 +257,24 @@
       scroll-margin-top: 5rem; /* 80px */
     }
   }
+
+  /* markdown 预览区暗色模式下 table 和 code 字体增强 */
+  [data-theme="dark"] .prose table {
+    @apply border-sky-900 bg-transparent;
+  }
+  [data-theme="dark"] .prose thead {
+    @apply bg-sky-900;
+  }
+  [data-theme="dark"] .prose th {
+    @apply text-sky-200 border-sky-800;
+  }
+  [data-theme="dark"] .prose td {
+    @apply text-foreground border-sky-800;
+  }
+  [data-theme="dark"] .prose code {
+    @apply text-sky-300 bg-sky-950 px-1 rounded;
+  }
+  [data-theme="dark"] .prose pre code {
+    @apply bg-transparent px-0 rounded-none;
+  }
 }

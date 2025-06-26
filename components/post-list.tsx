@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { formatPostDate } from '@/lib/utils';
+import PostSort, { SortOption } from './post-sort';
 
 interface Post {
   id: number;
@@ -21,17 +22,32 @@ export default function PostList() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [currentSort, setCurrentSort] = useState<SortOption>('date-desc');
   const pageSize = 12;
 
-  const loadPosts = async (pageNum: number) => {
+  const loadPosts = async (pageNum: number, sortOption: SortOption) => {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { data, error } = await supabase
+      let query = supabase
         .from('Post')
-        .select('id, slug, title, content, date, readTime, tags, lastModified')
-        .order('date', { ascending: false })
-        .range((pageNum - 1) * pageSize, pageNum * pageSize - 1);
+        .select('id, slug, title, content, date, readTime, tags, lastModified');
+
+      // 根据排序选项设置排序
+      switch (sortOption) {
+        case 'date-desc':
+          query = query.order('date', { ascending: false });
+          break;
+        case 'date-asc':
+          query = query.order('date', { ascending: true });
+          break;
+        case 'lastModified':
+          // 先按lastModified降序排列（有日期的在前），然后按date降序排列（NULL值的按创建日期排序）
+          query = query.order('lastModified', { ascending: false, nullsFirst: false }).order('date', { ascending: false });
+          break;
+      }
+
+      const { data, error } = await query.range((pageNum - 1) * pageSize, pageNum * pageSize - 1);
 
       if (error) throw error;
 
@@ -50,8 +66,13 @@ export default function PostList() {
   };
 
   useEffect(() => {
-    loadPosts(page);
-  }, [page]);
+    loadPosts(page, currentSort);
+  }, [page, currentSort]);
+
+  const handleSortChange = (sortOption: SortOption) => {
+    setCurrentSort(sortOption);
+    setPage(1); // 重置到第一页
+  };
 
   const handlePrevPage = () => {
     if (page > 1) {
@@ -67,6 +88,8 @@ export default function PostList() {
 
   return (
     <div className='pt-[120px]'>
+      <PostSort currentSort={currentSort} onSortChange={handleSortChange} />
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {posts.map((post) => (
           <Link 
