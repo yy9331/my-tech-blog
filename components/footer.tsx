@@ -37,7 +37,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link href="/write" className="hover:text-sky-400 transition-colors">
-                  写文章
+                  新文章
                 </Link>
               </li>
             </ul>

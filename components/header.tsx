@@ -109,7 +109,7 @@ const Header = () => {
                   分类
                 </Link>
                 <Link href="/write" className="text-muted-foreground hover:text-sky-400 transition-colors">
-                  写文章
+                  新文章
                 </Link>
                 {isLoggedIn ? (
                   <UserInfo />
@@ -138,7 +138,7 @@ const Header = () => {
               <button className="absolute top-6 right-6 text-foreground text-3xl" onClick={() => setMenuOpen(false)} aria-label="关闭菜单">×</button>
               <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/')}>首页</button>
               <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/categories')}>分类</button>
-              <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>写文章</button>
+              <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>新文章</button>
               {isLoggedIn ? (
                 <div className="w-3/4 flex flex-col items-center space-y-4">
                   {/* 移动端用户信息 */}
@@ -213,7 +213,7 @@ const Header = () => {
               分类
             </Link>
             <Link href="/write" className="text-muted-foreground hover:text-sky-400 transition-colors">
-              写文章
+              新文章
             </Link>
             {isLoggedIn ? (
               <UserInfo />
@@ -242,7 +242,7 @@ const Header = () => {
           <button className="absolute top-6 right-6 text-foreground text-3xl" onClick={() => setMenuOpen(false)} aria-label="关闭菜单">×</button>
           <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/')}>首页</button>
           <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/categories')}>分类</button>
-          <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>写文章</button>
+          <button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>新文章</button>
           {isLoggedIn ? (
             <div className="w-3/4 flex flex-col items-center space-y-4">
               {/* 移动端用户信息 */}

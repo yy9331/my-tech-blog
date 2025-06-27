@@ -72,7 +72,25 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving }: U
           .eq('slug', editSlug)
           .single();
 
-        if (fetchError) throw fetchError;
+        if (fetchError) {
+          // 如果是文章不存在的错误，这是新文章，清空内容
+          if (fetchError.code === 'PGRST116') {
+            setArticleData({
+              title: '',
+              date: '',
+              author: '',
+              readTime: '',
+              tags: [],
+              content: '',
+            });
+            setContent('');
+            setIsEditing(false);
+            setNewlyCreatedTags([]);
+            return;
+          }
+          // 其他错误才抛出
+          throw fetchError;
+        }
 
         if (post) {
           setArticleData({
@@ -93,6 +111,51 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving }: U
 
     fetchPost();
   }, [editSlug, setContent]);
+
+  // 为新文章生成 slug 并更新 URL
+  useEffect(() => {
+    // 如果没有 editSlug 且不是从 localStorage 恢复的，生成新的 slug
+    if (!editSlug && !localStorage.getItem('unsavedPost')) {
+      const newSlug = nanoid();
+      const newUrl = `/write?edit=${newSlug}`;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [editSlug]);
+
+  // 当直接访问 /write 页面时，清除旧的编辑状态并生成新的 slug
+  useEffect(() => {
+    // 检查是否是从其他页面直接跳转到 /write
+    const isDirectWriteAccess = !localStorage.getItem('unsavedPost') && 
+                               !localStorage.getItem('lastEditSlug') && 
+                               window.location.pathname === '/write';
+    
+    if (isDirectWriteAccess) {
+      // 清空所有文章数据
+      setArticleData({
+        title: '',
+        date: '',
+        author: '',
+        readTime: '',
+        tags: [],
+        content: '',
+      });
+      setContent('');
+      setIsEditing(false);
+      setNewlyCreatedTags([]);
+      
+      // 生成新的 slug 并更新 URL
+      const newSlug = nanoid();
+      const newUrl = `/write?edit=${newSlug}`;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [setContent]);
+
+  // 记录当前编辑的 slug，用于判断是否是从编辑页面跳转
+  useEffect(() => {
+    if (editSlug) {
+      localStorage.setItem('lastEditSlug', editSlug);
+    }
+  }, [editSlug]);
 
   const updateArticleData = (field: keyof ArticleData, value: string | number | string[]) => {
     setArticleData(prev => ({ ...prev, [field]: value }));
@@ -133,8 +196,10 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving }: U
         }
       }
 
-      const slug = isEditing ? editSlug : nanoid();
-      const { error: insertPostError } = await createClient().from('Post').upsert({
+      // 使用当前的 editSlug 或生成新的 slug
+      const slug = editSlug || nanoid();
+      
+      const { error: insertPostError } = await supabase.from('Post').upsert({
         slug,
         title: articleData.title,
         date: articleData.date,
