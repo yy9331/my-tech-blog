@@ -13,6 +13,7 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder,
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLUListElement>(null);
 
@@ -52,7 +53,11 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder,
       onChange([...value, tag]);
     }
     setInput('');
-    setOpen(false);
+    // 保持下拉框打开并重新聚焦输入框
+    setOpen(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   const handleCreateTag = () => {
@@ -64,7 +69,11 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder,
       }
     }
     setInput('');
-    setOpen(false);
+    // 保持下拉框打开并重新聚焦输入框
+    setOpen(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   const keyHandlers: Record<string, (e: React.KeyboardEvent<HTMLInputElement>) => void> = {
@@ -124,6 +133,7 @@ export default function TagsMultiSelect({ options, value, onChange, placeholder,
           </span>
         ))}
         <input
+          ref={inputRef}
           className="flex-1 bg-transparent outline-none text-foreground placeholder-muted-foreground min-w-[80px]"
           value={input}
           onChange={e => setInput(e.target.value)}

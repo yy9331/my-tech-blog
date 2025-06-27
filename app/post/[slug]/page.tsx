@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm';
 import ImagePreview from '@/components/ui/image-preview';
 import TableOfContents from '@/components/ui/table-of-contents';
 import CodeBlock from '@/components/code-block';
+import Comments from '@/components/comments';
 import { formatPostDate } from '@/lib/utils';
 
 interface Post {
@@ -346,6 +347,13 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
               <div className="flex-1"></div>
             )}
           </div>
+        </div>
+
+        {/* 评论区 */}
+        <div className={`transition-all duration-300 ${
+          isMobile ? '' : isTocCollapsed ? 'ml-20' : 'ml-80'
+        }`}>
+          <Comments postSlug={slug} />
         </div>
       </div>
       <ImagePreview imageUrl={previewImageUrl} onClose={() => setPreviewImageUrl(null)} />

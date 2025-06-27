@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { type NextRequest } from "next/server";
-import { isGitHubUserAllowed } from "@/lib/auth-config";
+import { isGitHubUserAllowed, AUTH_CONFIG } from "@/lib/auth-config";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -26,11 +26,14 @@ export async function GET(request: NextRequest) {
                               data.user.user_metadata?.login ||
                               data.user.user_metadata?.name;
         
-        // 检查是否在允许列表中
-        if (!githubUsername || !isGitHubUserAllowed(githubUsername)) {
-          // 不在允许列表中，登出用户并重定向到错误页面
-          await supabase.auth.signOut();
-          return NextResponse.redirect(`${baseUrl}/auth/login?error=Access denied. Only authorized GitHub users can login.`);
+        // 如果允许所有GitHub用户登录，则跳过权限检查
+        if (!AUTH_CONFIG.ALLOW_ALL_GITHUB_USERS) {
+          // 检查是否在允许列表中
+          if (!githubUsername || !isGitHubUserAllowed(githubUsername)) {
+            // 不在允许列表中，登出用户并重定向到错误页面
+            await supabase.auth.signOut();
+            return NextResponse.redirect(`${baseUrl}/auth/login?error=Access denied. Only authorized GitHub users can login.`);
+          }
         }
       }
       
