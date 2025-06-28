@@ -31,7 +31,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-16">
       <div className="max-w-7xl mx-auto">
         <form onSubmit={handleSave}>
           <CollapsibleForm

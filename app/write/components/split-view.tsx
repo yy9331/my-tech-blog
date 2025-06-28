@@ -27,12 +27,12 @@ const SplitView: React.FC<SplitViewProps> = ({
           content={content}
           onContentChange={onContentChange}
           onScroll={onEditorScroll}
-          className="h-48"
+          className="h-[50vh]"
         />
         <div 
           data-preview
           onScroll={onPreviewScroll}
-          className="w-full p-4 border border-border rounded-lg bg-card text-foreground h-48 overflow-y-auto"
+          className="w-full p-4 border border-border rounded-lg bg-card text-foreground h-[40vh] overflow-y-auto"
         >
           <MarkdownPreview content={content} onImageClick={onImageClick} />
         </div>
