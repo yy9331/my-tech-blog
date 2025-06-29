@@ -3,15 +3,15 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import PostContent from './post-content';
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
   if (!slug) {
     notFound();
   }
 
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     
     const { data: currentPost, error: currentError } = await supabase
       .from('Post')

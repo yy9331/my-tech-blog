@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import ReactMarkdown, { Components } from 'react-markdown';
@@ -35,7 +35,6 @@ interface PostContentProps {
 }
 
 export default function PostContent({ post, prevPost, nextPost }: PostContentProps) {
-  const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
