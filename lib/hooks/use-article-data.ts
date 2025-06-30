@@ -19,9 +19,20 @@ interface UseArticleDataProps {
   content: string;
   setContent: (content: string) => void;
   setIsSaving: (saving: boolean) => void;
+  initialPost?: {
+    id: number;
+    slug: string;
+    title: string;
+    content: string;
+    date: string;
+    author: string;
+    readTime: number | null;
+    tags: string[];
+    lastModified?: string | null;
+  };
 }
 
-export const useArticleData = ({ editSlug, content, setContent, setIsSaving }: UseArticleDataProps) => {
+export const useArticleData = ({ editSlug, content, setContent, setIsSaving, initialPost }: UseArticleDataProps) => {
   const router = useRouter();
   const { showToast } = useToast();
   
@@ -60,10 +71,26 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving }: U
     }
   }, [setContent]);
 
-  // 获取编辑的文章数据
+  // 使用服务器端获取的初始数据
+  useEffect(() => {
+    if (initialPost && !localStorage.getItem('unsavedPost')) {
+      setArticleData({
+        title: initialPost.title || '',
+        date: initialPost.date || '',
+        author: initialPost.author || '',
+        readTime: initialPost.readTime || '',
+        tags: initialPost.tags || [],
+        content: initialPost.content || '',
+      });
+      setContent(initialPost.content || '');
+      setIsEditing(true);
+    }
+  }, [initialPost, setContent]);
+
+  // 获取编辑的文章数据（仅在没有初始数据时执行）
   useEffect(() => {
     const fetchPost = async () => {
-      if (!editSlug || localStorage.getItem('unsavedPost')) return;
+      if (!editSlug || localStorage.getItem('unsavedPost') || initialPost) return;
 
       try {
         const { data: post, error: fetchError } = await createClient()
@@ -110,7 +137,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving }: U
     };
 
     fetchPost();
-  }, [editSlug, setContent]);
+  }, [editSlug, setContent, initialPost]);
 
   // 为新文章生成 slug 并更新 URL
   useEffect(() => {
