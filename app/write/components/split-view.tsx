@@ -12,6 +12,8 @@ interface SplitViewProps {
   isMobile?: boolean;
   editorRef?: React.RefObject<HTMLDivElement | null>;
   previewRef?: React.RefObject<HTMLDivElement | null>;
+  onUndo?: () => void;
+  onRedo?: () => void;
 }
 
 const SplitView: React.FC<SplitViewProps> = ({

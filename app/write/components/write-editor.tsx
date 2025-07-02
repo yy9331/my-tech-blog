@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useEditor } from '../context';
 import { useMobileDetection } from '@/lib/hooks/use-mobile-detection';
 import { useScrollSync } from '@/lib/hooks/use-scroll-sync';
@@ -57,6 +57,79 @@ const WriteEditor: React.FC<WriteEditorProps> = ({
     initialPost: initialPost || undefined,
   });
   
+  // 撤销/重做历史栈
+  const [history, setHistory] = useState<string[]>([markdown]);
+  const [redoStack, setRedoStack] = useState<string[]>([]);
+  const [isComposing, setIsComposing] = useState(false); // 处理中文输入法
+
+  // 推入历史
+  const pushHistory = useCallback((newValue: string) => {
+    setHistory(prev => {
+      if (prev[prev.length - 1] === newValue) return prev;
+      return [...prev, newValue];
+    });
+    setRedoStack([]);
+  }, []);
+
+  // 撤销
+  const undo = useCallback(() => {
+    if (history.length <= 1) return;
+    const newHistory = history.slice(0, -1);
+    const last = history[history.length - 1];
+    const prevValue = history[history.length - 2];
+    setHistory(newHistory);
+    setRedoStack([last, ...redoStack]);
+    setContent(prevValue);
+  }, [history, redoStack, setContent]);
+
+  // 重做
+  const redo = useCallback(() => {
+    if (redoStack.length === 0) return;
+    const next = redoStack[0];
+    setRedoStack(redoStack.slice(1));
+    setHistory([...history, next]);
+    setContent(next);
+  }, [history, redoStack, setContent]);
+
+  // 统一内容变更处理
+  const handleContentChange = useCallback((eOrValue: React.ChangeEvent<HTMLTextAreaElement> | string) => {
+    const value = typeof eOrValue === 'string' ? eOrValue : eOrValue.target.value;
+    setContent(value);
+    pushHistory(value);
+  }, [setContent, pushHistory]);
+
+  // 监听撤销/重做快捷键
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isComposing) return;
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const undoKey = (isMac ? e.metaKey : e.ctrlKey) && e.key === 'z' && !e.shiftKey;
+      const redoKey = (isMac ? e.metaKey : e.ctrlKey) && ((e.key === 'z' && e.shiftKey) || e.key === 'y');
+      if (undoKey) {
+        e.preventDefault();
+        undo();
+      }
+      if (redoKey) {
+        e.preventDefault();
+        redo();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo, isComposing]);
+
+  // 处理中文输入法合成
+  useEffect(() => {
+    const handleCompositionStart = () => setIsComposing(true);
+    const handleCompositionEnd = () => setIsComposing(false);
+    document.addEventListener('compositionstart', handleCompositionStart);
+    document.addEventListener('compositionend', handleCompositionEnd);
+    return () => {
+      document.removeEventListener('compositionstart', handleCompositionStart);
+      document.removeEventListener('compositionend', handleCompositionEnd);
+    };
+  }, []);
+
   // 使用自定义 hook
   useSaveShortcut(containerRef);
 
@@ -111,13 +184,15 @@ const WriteEditor: React.FC<WriteEditorProps> = ({
   const renderSplitView = () => (
     <SplitView
       content={markdown}
-      onContentChange={(e) => setContent(e.target.value)}
+      onContentChange={handleContentChange}
       onImageClick={handleImageClick}
       onEditorScroll={() => syncScroll('editor')}
       onPreviewScroll={() => syncScroll('preview')}
       isMobile={isMobile}
       editorRef={editorRef}
       previewRef={previewRef}
+      onUndo={undo}
+      onRedo={redo}
     />
   );
 
