@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useArticleData } from '@/lib/hooks/use-article-data';
 import ViewModeTabs, { ViewMode } from '@/components/view-mode-tabs';
 import SaveButton from '@/components/save-button';
+import ScrollToTop from '@/components/scroll-to-top';
 import MarkdownPreview from './markdown-preview';
 import SplitView from './split-view';
 import FullScreenPreview from './full-screen-preview';
@@ -37,6 +38,8 @@ const WriteEditor: React.FC<WriteEditorProps> = ({
 }) => {
   const { content: markdown, setContent, isSaving, setIsSaving } = useEditor();
   const containerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   
   const [viewMode, setViewMode] = useState<ViewMode>('split');
@@ -99,7 +102,7 @@ const WriteEditor: React.FC<WriteEditorProps> = ({
 
   // 渲染预览视图
   const renderPreviewView = () => (
-    <div className="w-full p-4 border border-border rounded-lg bg-card text-foreground">
+    <div ref={previewRef} className="w-full p-4 border border-border rounded-lg bg-card text-foreground h-screen overflow-y-auto">
       <MarkdownPreview content={markdown} onImageClick={handleImageClick} />
     </div>
   );
@@ -113,6 +116,8 @@ const WriteEditor: React.FC<WriteEditorProps> = ({
       onEditorScroll={() => syncScroll('editor')}
       onPreviewScroll={() => syncScroll('preview')}
       isMobile={isMobile}
+      editorRef={editorRef}
+      previewRef={previewRef}
     />
   );
 
@@ -158,6 +163,23 @@ const WriteEditor: React.FC<WriteEditorProps> = ({
       
       {/* 图片预览 */}
       <ImagePreview imageUrl={previewImageUrl} onClose={() => setPreviewImageUrl(null)} />
+      
+      {/* 回到顶部按钮 */}
+      {viewMode === 'preview' && (
+        <ScrollToTop targetRef={previewRef} />
+      )}
+      {viewMode === 'split' && (
+        <>
+          <ScrollToTop 
+            targetRef={editorRef} 
+            className="bottom-6 right-1/2 transform translate-x-8" 
+          />
+          <ScrollToTop 
+            targetRef={previewRef} 
+            className="bottom-6 right-6" 
+          />
+        </>
+      )}
     </div>
   );
 };

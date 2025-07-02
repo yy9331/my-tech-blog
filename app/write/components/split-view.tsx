@@ -10,6 +10,8 @@ interface SplitViewProps {
   onEditorScroll?: () => void;
   onPreviewScroll?: () => void;
   isMobile?: boolean;
+  editorRef?: React.RefObject<HTMLDivElement | null>;
+  previewRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const SplitView: React.FC<SplitViewProps> = ({
@@ -18,18 +20,23 @@ const SplitView: React.FC<SplitViewProps> = ({
   onImageClick,
   onEditorScroll,
   onPreviewScroll,
-  isMobile = false
+  isMobile = false,
+  editorRef,
+  previewRef
 }) => {
   if (isMobile) {
     return (
       <div className="flex flex-col space-y-4 relative">
-        <EditorView
-          content={content}
-          onContentChange={onContentChange}
-          onScroll={onEditorScroll}
-          className="h-[50vh]"
-        />
+        <div ref={editorRef}>
+          <EditorView
+            content={content}
+            onContentChange={onContentChange}
+            onScroll={onEditorScroll}
+            className="h-[50vh]"
+          />
+        </div>
         <div 
+          ref={previewRef}
           data-preview
           onScroll={onPreviewScroll}
           className="w-full p-4 border border-border rounded-lg bg-card text-foreground h-[40vh] overflow-y-auto"
@@ -42,12 +49,15 @@ const SplitView: React.FC<SplitViewProps> = ({
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      <EditorView
-        content={content}
-        onContentChange={onContentChange}
-        onScroll={onEditorScroll}
-      />
+      <div ref={editorRef}>
+        <EditorView
+          content={content}
+          onContentChange={onContentChange}
+          onScroll={onEditorScroll}
+        />
+      </div>
       <div 
+        ref={previewRef}
         data-preview
         onScroll={onPreviewScroll}
         className="p-4 border border-border rounded-lg bg-card text-foreground h-screen overflow-y-auto"

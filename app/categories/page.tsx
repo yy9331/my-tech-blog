@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import ScrollToTop from '@/components/scroll-to-top';
 
 interface TagData {
   tag: string;
@@ -87,6 +88,7 @@ export default function CategoriesPage() {
           </div>
         )}
       </div>
+      <ScrollToTop />
     </div>
   );
 } 

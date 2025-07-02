@@ -11,6 +11,7 @@ import TableOfContents from '@/components/ui/table-of-contents';
 import CodeBlock from '@/components/code-block';
 import Comments from '@/components/comments';
 import { formatPostDate } from '@/lib/utils';
+import ScrollToTop from '@/components/scroll-to-top';
 
 interface Post {
   id: number;
@@ -265,6 +266,7 @@ export default function PostContent({ post, prevPost, nextPost }: PostContentPro
         </div>
       </div>
       <ImagePreview imageUrl={previewImageUrl} onClose={() => setPreviewImageUrl(null)} />
+      <ScrollToTop />
     </div>
   );
 } 

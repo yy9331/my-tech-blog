@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import ScrollToTop from '@/components/scroll-to-top';
 
 interface Post {
   id: number;
@@ -125,6 +126,7 @@ export default function TagPostsPage({ params }: { params: Promise<{ tag: string
           </div>
         )}
       </div>
+      <ScrollToTop />
     </div>
   );
 } 
