@@ -25,6 +25,7 @@ interface Post {
   readTime: number | null;
   tags: string[];
   lastModified?: string | null;
+  github_url: string;
 }
 
 interface WriteEditorProps {

@@ -126,4 +126,7 @@ GRANT SELECT ON comments_with_users TO authenticated;
 -- 1. 将 ADMIN_EMAIL 替换为你的管理员邮箱地址
 -- 2. 将 ADMIN_GITHUB_USERNAME 替换为你的 GitHub 用户名
 -- 3. 在 Supabase SQL 编辑器中执行此文件
--- 4. 确保你的 .env.local 文件中包含正确的 Supabase 配置 
+-- 4. 确保你的 .env.local 文件中包含正确的 Supabase 配置
+
+-- 添加Post表的github_url字段的SQL迁移示例
+ALTER TABLE Post ADD COLUMN github_url text; 

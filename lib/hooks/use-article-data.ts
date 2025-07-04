@@ -12,6 +12,7 @@ interface ArticleData {
   readTime: number | '';
   tags: string[];
   content: string;
+  github_url: string;
 }
 
 interface UseArticleDataProps {
@@ -29,6 +30,7 @@ interface UseArticleDataProps {
     readTime: number | null;
     tags: string[];
     lastModified?: string | null;
+    github_url: string;
   };
 }
 
@@ -43,6 +45,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving, ini
     readTime: '',
     tags: [],
     content: '',
+    github_url: '',
   });
   
   const [isEditing, setIsEditing] = useState(false);
@@ -61,6 +64,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving, ini
           readTime: post.readTime || '',
           tags: post.tags || [],
           content: post.content || '',
+          github_url: post.github_url || '',
         });
         setContent(post.content || '');
         localStorage.removeItem('unsavedPost');
@@ -81,6 +85,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving, ini
         readTime: initialPost.readTime || '',
         tags: initialPost.tags || [],
         content: initialPost.content || '',
+        github_url: initialPost.github_url || '',
       });
       setContent(initialPost.content || '');
       setIsEditing(true);
@@ -109,6 +114,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving, ini
               readTime: '',
               tags: [],
               content: '',
+              github_url: '',
             });
             setContent('');
             setIsEditing(false);
@@ -127,6 +133,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving, ini
             readTime: post.readTime || '',
             tags: post.tags || [],
             content: post.content,
+            github_url: post.github_url || '',
           });
           setContent(post.content);
           setIsEditing(true);
@@ -165,6 +172,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving, ini
         readTime: '',
         tags: [],
         content: '',
+        github_url: '',
       });
       setContent('');
       setIsEditing(false);
@@ -235,6 +243,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving, ini
         content,
         readTime: articleData.readTime === '' ? null : articleData.readTime,
         lastModified: new Date().toISOString(),
+        github_url: articleData.github_url,
       }, {
         onConflict: 'slug'
       });

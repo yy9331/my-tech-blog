@@ -30,6 +30,16 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
     addNewTag(newTag);
   };
 
+  const [githubUrl, setGithubUrl] = useState(articleData.github_url || '');
+  React.useEffect(() => {
+    setGithubUrl(articleData.github_url || '');
+  }, [articleData.github_url]);
+
+  const handleGithubUrlChange = (value: string) => {
+    setGithubUrl(value);
+    updateArticleData('github_url', value);
+  };
+
   return (
     <div className="min-h-screen bg-background pt-16">
       <div className="max-w-7xl mx-auto">
@@ -45,6 +55,8 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
             availableTags={availableTags}
             tagsLoading={tagsLoading}
             editSlug={editSlug}
+            githubUrl={githubUrl}
+            onGithubUrlChange={handleGithubUrlChange}
             onCollapsedChange={setCollapsed}
             onTitleChange={(value) => updateArticleData('title', value)}
             onDateChange={(value) => updateArticleData('date', value)}

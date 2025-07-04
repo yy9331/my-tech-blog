@@ -13,6 +13,8 @@ interface CollapsibleFormProps {
   availableTags: string[];
   tagsLoading: boolean;
   editSlug: string | null;
+  githubUrl: string;
+  onGithubUrlChange: (value: string) => void;
   onCollapsedChange: (collapsed: boolean) => void;
   onTitleChange: (value: string) => void;
   onDateChange: (value: string) => void;
@@ -33,6 +35,8 @@ const CollapsibleForm: React.FC<CollapsibleFormProps> = ({
   availableTags,
   tagsLoading,
   editSlug,
+  githubUrl,
+  onGithubUrlChange,
   onCollapsedChange,
   onTitleChange,
   onDateChange,
@@ -73,6 +77,8 @@ const CollapsibleForm: React.FC<CollapsibleFormProps> = ({
           availableTags={availableTags}
           tagsLoading={tagsLoading}
           editSlug={editSlug}
+          githubUrl={githubUrl}
+          onGithubUrlChange={onGithubUrlChange}
           onTitleChange={onTitleChange}
           onDateChange={onDateChange}
           onAuthorChange={onAuthorChange}
