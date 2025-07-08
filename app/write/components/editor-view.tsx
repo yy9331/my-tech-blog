@@ -20,33 +20,98 @@ const EditorView: React.FC<EditorViewProps> = ({
 
   // 处理键盘事件，实现代码块快捷输入和快捷包裹
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const textarea = e.currentTarget;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const value = textarea.value;
+    // 1. Tab 选中时整段缩进两格
+    if (e.key === 'Tab' && start !== end) {
+      e.preventDefault();
+      // 获取选中行的起止
+      const before = value.slice(0, start);
+      const selected = value.slice(start, end);
+      const after = value.slice(end);
+      // 每行前加两个空格
+      const indented = selected.replace(/(^|\n)/g, '$1  ');
+      const newValue = before + indented + after;
+      const syntheticEvent = { target: { value: newValue } } as React.ChangeEvent<HTMLTextAreaElement>;
+      onContentChange(syntheticEvent);
+      setTimeout(() => {
+        textarea.setSelectionRange(start + 2, end + 2 * (selected.match(/\n/g)?.length ?? 0) + 2);
+        textarea.focus();
+      }, 0);
+      return;
+    }
+    // 2. 选中时按 (, [, { 包裹选中内容
+    const bracketMap: Record<string, [string, string]> = {
+      '(': ['(', ')'],
+      '[': ['[', ']'],
+      '{': ['{', '}'],
+    };
+    if (bracketMap[e.key] && start !== end) {
+      e.preventDefault();
+      const [left, right] = bracketMap[e.key];
+      const before = value.slice(0, start);
+      const selected = value.slice(start, end);
+      const after = value.slice(end);
+      const wrapped = left + selected + right;
+      const newValue = before + wrapped + after;
+      const syntheticEvent = { target: { value: newValue } } as React.ChangeEvent<HTMLTextAreaElement>;
+      onContentChange(syntheticEvent);
+      setTimeout(() => {
+        textarea.setSelectionRange(start + 1, end + 1);
+        textarea.focus();
+      }, 0);
+      return;
+    }
+    // 3. Cmd/Ctrl+X 剪切整行
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    if ((isMac ? e.metaKey : e.ctrlKey) && e.key.toLowerCase() === 'x' && start === end) {
+      // 剪切整行
+      e.preventDefault();
+      const lines = value.split('\n');
+      let charCount = 0;
+      let lineIdx = 0;
+      for (; lineIdx < lines.length; lineIdx++) {
+        if (charCount + lines[lineIdx].length >= start) break;
+        charCount += lines[lineIdx].length + 1;
+      }
+      const lineStart = charCount;
+      const lineEnd = charCount + lines[lineIdx].length;
+      const before = value.slice(0, lineStart);
+      const after = value.slice(lineEnd + 1); // +1 跳过换行
+      const newValue = before + (after ? '\n' + after : '');
+      // 复制到剪贴板
+      navigator.clipboard.writeText(lines[lineIdx] + '\n');
+      const syntheticEvent = { target: { value: newValue } } as React.ChangeEvent<HTMLTextAreaElement>;
+      onContentChange(syntheticEvent);
+      setTimeout(() => {
+        textarea.setSelectionRange(lineStart, lineStart);
+        textarea.focus();
+      }, 0);
+      return;
+    }
+    // ...原有包裹和Tab逻辑...
     const wrapKeys: Record<string, string> = {
       '`': '`',
       '"': '"',
       "'": "'",
       '*': '*',
     };
-    // 快捷包裹逻辑
-    if (wrapKeys[e.key] && e.currentTarget.selectionStart !== e.currentTarget.selectionEnd) {
+    if (wrapKeys[e.key] && start !== end) {
       e.preventDefault();
-      const textarea = e.currentTarget;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const value = textarea.value;
       const before = value.slice(0, start);
       const selected = value.slice(start, end);
       const after = value.slice(end);
       const wrapChar = wrapKeys[e.key];
       const wrapped = wrapChar + selected + wrapChar;
       const newValue = before + wrapped + after;
-      // 触发内容变更
       const syntheticEvent = {
         target: {
           value: newValue
         }
       } as React.ChangeEvent<HTMLTextAreaElement>;
       onContentChange(syntheticEvent);
-      // 重新设置选区
       setTimeout(() => {
         textarea.setSelectionRange(start + 1, end + 1);
         textarea.focus();
@@ -55,34 +120,23 @@ const EditorView: React.FC<EditorViewProps> = ({
     }
     if (e.key === 'Tab') {
       e.preventDefault();
-      const textarea = e.currentTarget;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const value = textarea.value;
-      // 检查光标前是否有 / 符号
       const beforeCursor = value.substring(0, start);
       const lastSlashIndex = beforeCursor.lastIndexOf('/');
       if (lastSlashIndex !== -1) {
-        // 检查 / 后面是否有语言名称
         const afterSlash = beforeCursor.substring(lastSlashIndex + 1);
         const languageMatch = afterSlash.match(/^([a-zA-Z0-9+#]+)/);
         if (languageMatch) {
           const language = languageMatch[1];
-          // 计算需要替换的文本范围
           const replaceStart = lastSlashIndex;
-          // 生成代码块
-          const codeBlock = `\`\`\`${language}\n\n\`\`\``;
-          // 替换文本
+          const codeBlock = `\${language}\n\n\`;
           const newValue = value.substring(0, replaceStart) + codeBlock + value.substring(end);
-          // 创建模拟的 change 事件
           const syntheticEvent = {
             target: {
               value: newValue
             }
           } as React.ChangeEvent<HTMLTextAreaElement>;
           onContentChange(syntheticEvent);
-          // 设置光标位置到代码块中间
-          const newCursorPosition = replaceStart + codeBlock.length - 4; // 减去末尾的 ```
+          const newCursorPosition = replaceStart + codeBlock.length - 4;
           setTimeout(() => {
             textarea.setSelectionRange(newCursorPosition, newCursorPosition);
             textarea.focus();
@@ -90,7 +144,6 @@ const EditorView: React.FC<EditorViewProps> = ({
           return;
         }
       }
-      // 如果没有匹配到代码块模式，插入普通的 Tab
       const newValue = value.substring(0, start) + '  ' + value.substring(end);
       const syntheticEvent = {
         target: {
@@ -98,7 +151,6 @@ const EditorView: React.FC<EditorViewProps> = ({
         }
       } as React.ChangeEvent<HTMLTextAreaElement>;
       onContentChange(syntheticEvent);
-      // 设置光标位置
       const newCursorPosition = start + 2;
       setTimeout(() => {
         textarea.setSelectionRange(newCursorPosition, newCursorPosition);
