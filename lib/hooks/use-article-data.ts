@@ -239,6 +239,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving, ini
         title: articleData.title,
         date: articleData.date,
         author: articleData.author,
+        user_id: session.user.id, // 添加用户ID
         tags: articleData.tags,
         content,
         readTime: articleData.readTime === '' ? null : articleData.readTime,

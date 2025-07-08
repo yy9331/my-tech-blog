@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { useState, useEffect } from 'react';
 import ThemeSwitcher from './theme-switcher';
+import NotificationButton from './notification-button';
 
 const Header = () => {
   const { isLoggedIn, setIsLoggedIn, userEmail, userName, userAvatar } = useAuth();
@@ -226,7 +227,10 @@ const Header = () => {
               新文章
             </Link>
             {isLoggedIn ? (
-              <UserInfo />
+              <div className="flex items-center space-x-2">
+                <NotificationButton />
+                <UserInfo />
+              </div>
             ) : (
               <button
                 onClick={handleLogin}

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast/toast-context';
+import { createNotification } from '@/lib/notifications';
 
 interface Comment {
   id: number;
@@ -223,6 +224,17 @@ export default function Comments({ postSlug }: CommentsProps) {
     setLoading(true);
     try {
       const supabase = createClient();
+      
+      // 首先获取文章信息
+      const { data: postData, error: postError } = await supabase
+        .from('Post')
+        .select('title, author, user_id')
+        .eq('slug', postSlug)
+        .single();
+
+      if (postError) throw postError;
+
+      // 提交评论
       const { data: newCommentData, error } = await supabase
         .from('comments')
         .insert({
@@ -249,6 +261,23 @@ export default function Comments({ postSlug }: CommentsProps) {
       setComments(prev => insertNewComment(prev, commentWithMetadata));
       setNewComment('');
       showToast('评论发布成功！', 'success');
+      
+      // 创建通知（如果评论者不是文章作者，且文章有作者ID）
+      if (postData && postData.user_id && postData.user_id !== user.id) {
+        try {
+          await createNotification(
+            postSlug,
+            postData.title,
+            newCommentData.id,
+            newCommentData.content,
+            userName || '匿名用户',
+            postData.user_id
+          );
+        } catch (notificationError) {
+          console.error('Error creating notification:', notificationError);
+          // 通知创建失败不影响评论发布
+        }
+      }
       
       // 清空输入框并调整高度
       if (textareaRef.current) {
@@ -414,6 +443,25 @@ export default function Comments({ postSlug }: CommentsProps) {
     setLoading(true);
     try {
       const supabase = createClient();
+      
+      // 首先获取文章信息和被回复的评论信息
+      const { data: postData, error: postError } = await supabase
+        .from('Post')
+        .select('title, author')
+        .eq('slug', postSlug)
+        .single();
+
+      if (postError) throw postError;
+
+      // 获取被回复的评论信息
+      const { data: parentComment, error: parentError } = await supabase
+        .from('comments')
+        .select('user_id, user_name')
+        .eq('id', parentId)
+        .single();
+
+      if (parentError) throw parentError;
+
       const { data: newReplyData, error } = await supabase
         .from('comments')
         .insert({
@@ -442,6 +490,23 @@ export default function Comments({ postSlug }: CommentsProps) {
       setReplyContent(rc => ({ ...rc, [parentId]: '' }));
       setReplyBoxOpen(rb => ({ ...rb, [parentId]: false }));
       showToast('回复成功', 'success');
+
+      // 创建通知（如果回复者不是被回复者）
+      if (parentComment && parentComment.user_id !== user.id) {
+        try {
+          await createNotification(
+            postSlug,
+            postData.title,
+            newReplyData.id,
+            newReplyData.content,
+            userName || '匿名用户',
+            parentComment.user_id
+          );
+        } catch (notificationError) {
+          console.error('Error creating notification for reply:', notificationError);
+          // 通知创建失败不影响回复发布
+        }
+      }
     } catch (error) {
       console.error('Reply operation failed:', error);
       showToast('回复失败', 'error');
