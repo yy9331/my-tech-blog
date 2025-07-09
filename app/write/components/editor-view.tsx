@@ -120,15 +120,15 @@ const EditorView: React.FC<EditorViewProps> = ({
     }
     if (e.key === 'Tab') {
       e.preventDefault();
-      const beforeCursor = value.substring(0, start);
-      const lastSlashIndex = beforeCursor.lastIndexOf('/');
-      if (lastSlashIndex !== -1) {
-        const afterSlash = beforeCursor.substring(lastSlashIndex + 1);
-        const languageMatch = afterSlash.match(/^([a-zA-Z0-9+#]+)/);
-        if (languageMatch) {
-          const language = languageMatch[1];
-          const replaceStart = lastSlashIndex;
-          const codeBlock = `\${language}\n\n\`;
+      // 检查是否为代码块快捷键：/xxx + Tab
+      if (start === end) { // 无选中文本时才处理代码块快捷键
+        const beforeCursor = value.substring(0, start);
+        const match = beforeCursor.match(/\/([a-zA-Z0-9+#]+)$/);
+        if (match) {
+          const language = match[1];
+          const replaceStart = start - match[0].length;
+          // 插入标准 markdown 代码块
+          const codeBlock = `\`\`\`${language}\n\n\`\`\``;
           const newValue = value.substring(0, replaceStart) + codeBlock + value.substring(end);
           const syntheticEvent = {
             target: {
@@ -136,14 +136,16 @@ const EditorView: React.FC<EditorViewProps> = ({
             }
           } as React.ChangeEvent<HTMLTextAreaElement>;
           onContentChange(syntheticEvent);
-          const newCursorPosition = replaceStart + codeBlock.length - 4;
+          // 光标定位到代码块内部
+          const cursorPos = replaceStart + codeBlock.indexOf('\n') + 1;
           setTimeout(() => {
-            textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+            textarea.setSelectionRange(cursorPos, cursorPos);
             textarea.focus();
           }, 0);
           return;
         }
       }
+      // 普通 Tab 缩进
       const newValue = value.substring(0, start) + '  ' + value.substring(end);
       const syntheticEvent = {
         target: {
