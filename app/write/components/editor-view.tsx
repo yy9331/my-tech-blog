@@ -24,8 +24,9 @@ const EditorView: React.FC<EditorViewProps> = ({
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const value = textarea.value;
+    
     // 1. Tab 选中时整段缩进两格
-    if (e.key === 'Tab' && start !== end) {
+    if (e.key === 'Tab' && start !== end && !e.shiftKey) {
       e.preventDefault();
       // 获取选中行的起止
       const before = value.slice(0, start);
@@ -38,6 +39,25 @@ const EditorView: React.FC<EditorViewProps> = ({
       onContentChange(syntheticEvent);
       setTimeout(() => {
         textarea.setSelectionRange(start + 2, end + 2 * (selected.match(/\n/g)?.length ?? 0) + 2);
+        textarea.focus();
+      }, 0);
+      return;
+    }
+    
+    // 2. Shift + Tab 选中时整段向左缩进两格
+    if (e.key === 'Tab' && start !== end && e.shiftKey) {
+      e.preventDefault();
+      // 获取选中行的起止
+      const before = value.slice(0, start);
+      const selected = value.slice(start, end);
+      const after = value.slice(end);
+      // 每行前移除两个空格（如果存在）
+      const unindented = selected.replace(/(^|\n)  /g, '$1');
+      const newValue = before + unindented + after;
+      const syntheticEvent = { target: { value: newValue } } as React.ChangeEvent<HTMLTextAreaElement>;
+      onContentChange(syntheticEvent);
+      setTimeout(() => {
+        textarea.setSelectionRange(start, end - (selected.length - unindented.length));
         textarea.focus();
       }, 0);
       return;
@@ -118,11 +138,11 @@ const EditorView: React.FC<EditorViewProps> = ({
       }, 0);
       return;
     }
-    if (e.key === 'Tab') {
+    if (e.key === 'Tab' && !e.shiftKey) {
       e.preventDefault();
       // 检查是否为代码块快捷键：/xxx + Tab
       if (start === end) { // 无选中文本时才处理代码块快捷键
-        const beforeCursor = value.substring(0, start);
+      const beforeCursor = value.substring(0, start);
         const match = beforeCursor.match(/\/([a-zA-Z0-9+#]+)$/);
         if (match) {
           const language = match[1];
