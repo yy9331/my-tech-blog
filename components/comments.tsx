@@ -229,6 +229,7 @@ export default function Comments({ postSlug }: CommentsProps) {
       const { data: postData, error: postError } = await supabase
         .from('Post')
         .select('title, author, user_id')
+        .eq('isShown', true)
         .eq('slug', postSlug)
         .single();
 
@@ -448,6 +449,7 @@ export default function Comments({ postSlug }: CommentsProps) {
       const { data: postData, error: postError } = await supabase
         .from('Post')
         .select('title, author')
+        .eq('isShown', true)
         .eq('slug', postSlug)
         .single();
 

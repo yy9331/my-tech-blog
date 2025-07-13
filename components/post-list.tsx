@@ -31,7 +31,8 @@ export default function PostList() {
       const supabase = createClient();
       let query = supabase
         .from('Post')
-        .select('id, slug, title, content, date, readTime, tags, lastModified');
+        .select('id, slug, title, content, date, readTime, tags, lastModified')
+        .eq('isShown', true);
 
       // 根据排序选项设置排序
       switch (sortOption) {

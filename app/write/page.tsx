@@ -17,6 +17,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
       const { data: post, error } = await supabase
         .from('Post')
         .select('*')
+        .eq('isShown', true)
         .eq('slug', editSlug)
         .single();
 

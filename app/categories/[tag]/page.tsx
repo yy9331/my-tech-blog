@@ -36,6 +36,7 @@ export default function TagPostsPage({ params }: { params: Promise<{ tag: string
         const { data, error } = await supabase
           .from('Post')
           .select('id, slug, title, content, date, readTime, tags')
+          .eq('isShown', true)
           .contains('tags', [tag]) // 使用 contains 操作符查询数组
           .order('date', { ascending: false });
 

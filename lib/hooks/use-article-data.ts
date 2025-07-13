@@ -101,6 +101,7 @@ export const useArticleData = ({ editSlug, content, setContent, setIsSaving, ini
         const { data: post, error: fetchError } = await createClient()
           .from('Post')
           .select('*')
+          .eq('isShown', true)
           .eq('slug', editSlug)
           .single();
 

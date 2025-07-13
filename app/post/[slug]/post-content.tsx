@@ -12,6 +12,9 @@ import CodeBlock from '@/components/code-block';
 import Comments from '@/components/comments';
 import { formatPostDate } from '@/lib/utils';
 import ScrollToTop from '@/components/scroll-to-top';
+import { useAuth } from '@/lib/auth-context';
+import { useRouter } from 'next/navigation';
+import { isAdmin } from '@/lib/auth-config';
 
 interface Post {
   id: number;
@@ -42,6 +45,10 @@ export default function PostContent({ post, prevPost, nextPost }: PostContentPro
   const [isMobile, setIsMobile] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const [isTocCollapsed, setIsTocCollapsed] = useState(false);
+  const { user } = useAuth();
+  const router = useRouter();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const pathname = usePathname();
 
@@ -138,6 +145,22 @@ export default function PostContent({ post, prevPost, nextPost }: PostContentPro
     setIsTocCollapsed(collapsed);
   };
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.from('Post').update({ isShown: false }).eq('slug', post.slug);
+      if (error) throw error;
+      setShowDeleteConfirm(false);
+      router.push('/');
+    } catch (err) {
+      const msg = (err && typeof err === 'object' && 'message' in err) ? (err as {message: unknown}).message : String(err);
+      alert('删除失败: ' + msg);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className={`min-h-screen bg-background text-foreground py-8 ${isWritePage ? 'pt-8' : 'pt-[120px]'}`}>
       <div className="container mx-auto px-4">
@@ -151,35 +174,73 @@ export default function PostContent({ post, prevPost, nextPost }: PostContentPro
                 <h1 className="text-4xl font-bold text-foreground mb-4">
                   {post.title}
                 </h1>
-                {isAuthorized && (
-                  <>
-                    {/* 桌面端：原按钮 */}
+                {(isAuthorized && isAdmin(user)) && (
+                  <div className="flex gap-2">
+                    {/* 编辑按钮（仅图标，带 tooltip） */}
                     {!isMobile && (
-                      <Link
-                        href={`/write?edit=${post.slug}`}
-                        className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors flex items-center gap-2"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        编辑该文章
-                      </Link>
+                      <div className="group relative flex items-center">
+                        <Link
+                          href={`/write?edit=${post.slug}`}
+                          className="w-10 h-10 flex items-center justify-center bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors"
+                          aria-label="编辑该文章"
+                        >
+                          {/* 编辑图标 */}
+                          <svg data-slot="icon" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <g transform="scale(0.7) translate(5,5)">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"></path>
+                            </g>
+                          </svg>
+                        </Link>
+                        <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1 text-xs rounded bg-gray-800 text-white opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10">编辑</span>
+                      </div>
                     )}
-                    {/* 移动端：仅边框图标 */}
-                    {isMobile && (
-                      <Link
-                        href={`/write?edit=${post.slug}`}
-                        className="w-10 h-10 flex items-center justify-center border-2 border-sky-600 rounded-lg hover:bg-sky-900 transition-colors"
-                        aria-label="编辑该文章"
-                      >
-                        <svg className="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </Link>
+                    {/* 删除按钮（仅图标，带 tooltip） */}
+                    {!isMobile && (
+                      <div className="group relative flex items-center">
+                        <button
+                          onClick={() => setShowDeleteConfirm(true)}
+                          className="w-10 h-10 flex items-center justify-center bg-red-500 dark:bg-red-700 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-800 transition-colors"
+                          aria-label="删除文章"
+                          disabled={deleting}
+                        >
+                          {/* 垃圾桶图标 */}
+                          <svg data-slot="icon" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <g transform="scale(0.7) translate(5,5)">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"></path>
+                            </g>
+                          </svg>
+                        </button>
+                        <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1 text-xs rounded bg-gray-800 text-white opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10">删除</span>
+                      </div>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
+              {/* 删除确认弹窗 */}
+              {showDeleteConfirm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                  <div className="bg-card dark:bg-gray-900 rounded-lg shadow-lg p-8 max-w-sm w-full">
+                    <h2 className="text-lg font-bold mb-4 text-red-600 dark:text-red-400">危险操作</h2>
+                    <p className="mb-6 text-foreground">确定要 <span className='font-bold text-red-600 dark:text-red-400'>永久删除</span> 这篇文章吗？此操作不可恢复！</p>
+                    <div className="flex justify-end gap-4">
+                      <button
+                        className="px-4 py-2 rounded-lg bg-muted text-foreground hover:bg-accent"
+                        onClick={() => setShowDeleteConfirm(false)}
+                        disabled={deleting}
+                      >
+                        取消
+                      </button>
+                      <button
+                        className="px-4 py-2 rounded-lg bg-red-500 dark:bg-red-700 text-white hover:bg-red-600 dark:hover:bg-red-800"
+                        onClick={handleDelete}
+                        disabled={deleting}
+                      >
+                        {deleting ? '正在删除...' : '确认删除'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="text-sm text-muted-foreground mt-2">
                 <span>发布于: {formatPostDate(post.date)}</span>
                 {post.readTime && <span> · {post.readTime} min read</span>}

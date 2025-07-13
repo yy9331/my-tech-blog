@@ -17,6 +17,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       .from('Post')
       .select('*')
       .eq('slug', slug)
+      .eq('isShown', true)
       .single();
 
     if (currentError || !currentPost) {
@@ -26,6 +27,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     const { data: navigationPosts, error: navError } = await supabase
       .from('Post')
       .select('slug, title')
+      .eq('isShown', true)
       .order('date', { ascending: false });
 
     if (navError) throw navError;
