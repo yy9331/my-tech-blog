@@ -1,5 +1,7 @@
 'use client';
 
+import { motion } from 'framer-motion';
+
 export type SortOption = 'date-desc' | 'date-asc' | 'lastModified';
 
 interface PostSortProps {
@@ -19,7 +21,7 @@ export default function PostSort({ currentSort, onSortChange }: PostSortProps) {
       <span className="text-sm text-muted-foreground">排序方式：</span>
       <div className="flex gap-2">
         {sortOptions.map((option) => (
-          <button
+          <motion.button
             key={option.value}
             onClick={() => onSortChange(option.value)}
             className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
@@ -27,9 +29,12 @@ export default function PostSort({ currentSort, onSortChange }: PostSortProps) {
                 ? 'bg-sky-600 text-white'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
             }`}
+            whileHover={{ scale: 1.10 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
           >
             {option.label}
-          </button>
+          </motion.button>
         ))}
       </div>
     </div>

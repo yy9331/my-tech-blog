@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { AuthProvider } from "@/lib/auth-context";
 import { ToastProvider } from "@/components/toast/toast-context";
+import PageTransition from "@/components/PageTransition";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,9 +25,11 @@ export default function RootLayout({
         <AuthProvider>
           <ToastProvider>
             <Header />
-            <main className="min-h-screen bg-background">
-              {children}
-            </main>
+              <main className="min-h-screen bg-grid">
+                <PageTransition>
+                  {children}
+                </PageTransition>
+              </main>
             <Footer />
           </ToastProvider>
         </AuthProvider>
