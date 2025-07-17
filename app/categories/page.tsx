@@ -65,7 +65,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground py-8 pt-24">
+    <div className="min-h-screen bg-grid text-foreground py-8 pt-24">
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold mb-8 text-foreground">文章分类</h1>
         

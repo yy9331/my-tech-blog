@@ -13,7 +13,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-card dark:bg-card dark:[background-color:initial] text-muted-foreground py-8 mt-[30px]">
+    <footer className="bg-card dark:bg-card dark:[background-color:initial] text-muted-foreground py-8">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>

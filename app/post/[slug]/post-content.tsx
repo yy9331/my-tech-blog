@@ -169,7 +169,7 @@ export default function PostContent({ post, prevPost, nextPost }: PostContentPro
         <div className={`transition-all duration-300 ${
           isMobile ? '' : isTocCollapsed ? 'ml-20' : 'ml-80'
         }`}>
-          <article className="max-w-4xl mx-auto bg-card rounded-lg shadow-lg p-8">
+          <article className="max-w-4xl mx-auto bg-grid-card border border-sky-200 dark:border-sky-800 group-hover:border-sky-400 dark:group-hover:border-sky-500 rounded-lg shadow-lg p-8">
             <header className="mb-8">
               <div className="flex justify-between items-start">
                 <h1 className="text-4xl font-bold text-foreground mb-4">
@@ -211,7 +211,7 @@ export default function PostContent({ post, prevPost, nextPost }: PostContentPro
                         >
                           <button
                             onClick={() => setShowDeleteConfirm(true)}
-                            className="w-10 h-10 flex items-center justify-center bg-red-500 dark:bg-red-700 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-800 transition-colors"
+                            className="w-10 h-10 flex items-center justify-center bg-red-500 dark:bg-red-700 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-800 transition-colors shadow-xl"
                             aria-label="删除文章"
                             disabled={deleting}
                           >

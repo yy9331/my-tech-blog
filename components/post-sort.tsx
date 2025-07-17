@@ -24,7 +24,7 @@ export default function PostSort({ currentSort, onSortChange }: PostSortProps) {
           <motion.button
             key={option.value}
             onClick={() => onSortChange(option.value)}
-            className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+            className={`px-3 py-1.5 text-sm rounded-md transition-colors shadow-xl ${
               currentSort === option.value
                 ? 'bg-sky-600 text-white'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'

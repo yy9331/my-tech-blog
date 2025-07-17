@@ -281,17 +281,31 @@
 
 @layer utilities {
   .bg-grid {
-    background-color: #101c2c;
+    background-color: #0c1522;
     background-image:
       linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
     background-size: 24px 24px;
   }
   [data-theme="light"] .bg-grid {
-    background-color: #fffaf0;
+    background-color: #f3e9d2;
     background-image:
       linear-gradient(rgba(16,28,44,0.06) 1px, transparent 1px),
       linear-gradient(90deg, rgba(16,28,44,0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .bg-grid-card {
+    background-color: #f9f3e4; /* 比 #f3e9d2 更浅，light模式 */
+    background-image:
+      linear-gradient(rgba(16,28,44,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16,28,44,0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  [data-theme="dark"] .bg-grid-card {
+    background-color: #14213a; /* 比 #0c1522 更浅，dark模式 */
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 }

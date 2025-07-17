@@ -25,7 +25,7 @@ export default function RootLayout({
         <AuthProvider>
           <ToastProvider>
             <Header />
-              <main className="min-h-screen bg-grid">
+              <main className="min-h-screen bg-grid pb-[30px]">
                 <PageTransition>
                   {children}
                 </PageTransition>
