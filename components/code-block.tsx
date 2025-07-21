@@ -2,6 +2,7 @@
 import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Mermaid from './mermaid-flowchart';
 
 interface CodeBlockProps {
   className?: string;
@@ -14,6 +15,10 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ className, children, inline, ...p
   const match = /language-(\w+)/.exec(className || '');
   const language = match ? match[1] : '';
   const codeContent = String(children || '').replace(/\n$/, '');
+
+  if (match && match[1] === "mermaid") {
+    return <Mermaid chart={String(children).trim()} />;
+  }
 
   // 如果是行内代码（inline 为 true 或者没有 className），使用行内样式
   if (inline || !className) {

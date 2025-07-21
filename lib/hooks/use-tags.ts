@@ -44,7 +44,6 @@ export const useTags = () => {
           });
           setAvailableTags([]);
         } else if (data) {
-          console.log('Successfully fetched tags:', data);
           setAvailableTags(data.map(item => item.name));
         } else {
           console.warn('No tags data received, setting empty array');
