@@ -98,7 +98,8 @@ export default function PostList() {
             className="block group"
             key={post.slug}
           >
-            <article className="bg-grid-card rounded-lg overflow-hidden shadow-lg transition-transform duration-300 group-hover:transform group-hover:scale-[1.02] border border-sky-200 dark:border-sky-800 group-hover:border-sky-400 dark:group-hover:border-sky-500">
+            <article className="bg-grid-card rounded-lg overflow-hidden shadow-lg transition-transform duration-300 group-hover:transform group-hover:scale-[1.02] border border-sky-200 dark:border-sky-800 group-hover:border-sky-400 dark:group-hover:border-sky-500 relative
+            rounded-2xl bg-[#181c2a] shadow-[0_0_40px_10px_rgba(59,130,246,0.25)] transition-shadow hover:shadow-[0_0_60px_20px_rgba(59,130,246,0.4)]">
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
                   <span>{formatPostDate(post.date)}</span>

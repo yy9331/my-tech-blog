@@ -249,9 +249,8 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
       </button>
 
       {/* 目录内容 */}
-      <div className={`bg-card/95 backdrop-blur-sm rounded-lg shadow-xl border border-border/50 p-4 transition-all duration-300 mt-[38px] ${
-        isCollapsed ? 'opacity-0 invisible' : 'opacity-100 visible'
-      }`}>
+      <div className={`bg-grid-card border border-border/50 rounded-lg shadow-xl p-4 transition-all duration-300 mt-[38px] 
+        ${isCollapsed ? 'opacity-0 invisible' : 'opacity-100 visible'}`}>
         <h3 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
           目录
         </h3>

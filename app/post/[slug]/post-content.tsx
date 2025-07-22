@@ -169,7 +169,7 @@ export default function PostContent({ post, prevPost, nextPost }: PostContentPro
         <div className={`transition-all duration-300 ${
           isMobile ? '' : isTocCollapsed ? 'ml-20' : 'ml-80'
         }`}>
-          <article className="max-w-4xl mx-auto bg-grid-card border border-sky-200 dark:border-sky-800 group-hover:border-sky-400 dark:group-hover:border-sky-500 rounded-lg shadow-lg p-8">
+          <article className="bg-grid-card border border-sky-200 dark:border-sky-800 group-hover:border-sky-400 dark:group-hover:border-sky-500 rounded-lg shadow-lg p-8">
             <header className="mb-8">
               <div className="flex justify-between items-start">
                 <h1 className="text-4xl font-bold text-foreground mb-4">
