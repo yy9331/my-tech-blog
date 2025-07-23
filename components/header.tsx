@@ -16,6 +16,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
 
   // 检查是否在 write 页面
   const isWritePage = pathname === '/write' || pathname.startsWith('/write?');
@@ -91,6 +92,70 @@ const Header = () => {
     </div>
   );
 
+  // 导航链接组件
+  const NavLink = ({ href, children }: { href: string; children: string }) => {
+    const isActive = pathname === href;
+    
+    return (
+      <Link href={href}>
+        <motion.div
+          className={`relative inline-block transition-colors cursor-pointer group ${
+            isActive 
+              ? 'text-sky-400 font-medium' 
+              : 'text-muted-foreground hover:text-sky-400'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onHoverStart={() => setHoveredLink(href)}
+          onHoverEnd={() => setHoveredLink(null)}
+        >
+          <span className="relative z-10">{children}</span>
+          
+          {/* 当前页面状态 - 实心背景 */}
+          {isActive && (
+            <motion.div
+              className="absolute inset-0 bg-sky-400/10 rounded-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            />
+          )}
+          
+          {/* 悬停状态 - 下划线动画 */}
+          <motion.div
+            className="absolute bottom-0 left-0 h-0.5 bg-sky-400 rounded-full"
+            initial={{ width: 0 }}
+            animate={{ 
+              width: (hoveredLink === href && !isActive) ? "100%" : 0,
+              transition: { 
+                type: "tween", 
+                duration: 0.3, 
+                ease: "easeOut" 
+              }
+            }}
+          />
+          
+          {/* 点击时的闯入动画 */}
+          <motion.div
+            className="absolute bottom-0 left-0 h-1 bg-sky-400 rounded-full opacity-0"
+            initial={{ width: 0, x: -20 }}
+            whileTap={{ 
+              width: "120%",
+              x: 0,
+              opacity: 1,
+              transition: { 
+                type: "spring", 
+                stiffness: 500, 
+                damping: 20,
+                duration: 0.2
+              }
+            }}
+          />
+        </motion.div>
+      </Link>
+    );
+  };
+
   // 如果在 write 页面，移动端始终显示 header，桌面端 hover 控制
   if (isWritePage) {
     return (
@@ -117,33 +182,9 @@ const Header = () => {
               </Link>
               {/* 桌面端菜单 */}
               <div className="hidden md:flex items-center space-x-6">
-                <Link href="/">
-                  <motion.span
-                    className="inline-block text-muted-foreground hover:text-sky-400 hover:font-bold transition-colors transition-transform"
-                    whileHover={{ scale: 1.18 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  >
-                    首页
-                  </motion.span>
-                </Link>
-                <Link href="/categories">
-                  <motion.span
-                    className="inline-block text-muted-foreground hover:text-sky-400 hover:font-bold transition-colors transition-transform"
-                    whileHover={{ scale: 1.18 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  >
-                    分类
-                  </motion.span>
-                </Link>
-                <Link href="/write">
-                  <motion.span
-                    className="inline-block text-muted-foreground hover:text-sky-400 hover:font-bold transition-colors transition-transform"
-                    whileHover={{ scale: 1.18 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  >
-                    新文章
-                  </motion.span>
-                </Link>
+                <NavLink href="/">首页</NavLink>
+                <NavLink href="/categories">分类</NavLink>
+                <NavLink href="/write">新文章</NavLink>
                 {isLoggedIn ? (
                   <UserInfo />
                 ) : (
@@ -256,33 +297,9 @@ const Header = () => {
           </Link>
           {/* 桌面端菜单 */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link href="/">
-              <motion.span
-                className="inline-block text-muted-foreground hover:text-sky-400 hover:font-bold transition-colors transition-transform"
-                whileHover={{ scale: 1.18 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              >
-                首页
-              </motion.span>
-            </Link>
-            <Link href="/categories">
-              <motion.span
-                className="inline-block text-muted-foreground hover:text-sky-400 hover:font-bold transition-colors transition-transform"
-                whileHover={{ scale: 1.18 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              >
-                分类
-              </motion.span>
-            </Link>
-            <Link href="/write">
-              <motion.span
-                className="inline-block text-muted-foreground hover:text-sky-400 hover:font-bold transition-colors transition-transform"
-                whileHover={{ scale: 1.18 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              >
-                新文章
-              </motion.span>
-            </Link>
+            <NavLink href="/">首页</NavLink>
+            <NavLink href="/categories">分类</NavLink>
+            <NavLink href="/write">新文章</NavLink>
             {isLoggedIn ? (
               <div className="flex items-center space-x-2">
                 <NotificationButton />
