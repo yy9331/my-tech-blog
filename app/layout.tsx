@@ -7,7 +7,13 @@ import { AuthProvider } from "@/lib/auth-context";
 import { ToastProvider } from "@/components/toast/toast-context";
 import PageTransition from "@/components/PageTransition";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial'],
+  variable: '--font-inter'
+});
 
 export const metadata: Metadata = {
   title: "My Tech Blog",
@@ -21,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} ${inter.variable}`}>
         <AuthProvider>
           <ToastProvider>
             <Header />
