@@ -210,7 +210,7 @@ const WriteEditor: React.FC<WriteEditorProps> = ({
   };
 
   return (
-    <div className="container mx-auto p-4" ref={containerRef}>
+    <div className="w-full h-full p-4 flex flex-col" ref={containerRef}>
       <div className="flex justify-between items-center mb-4">
         <ViewModeTabs 
           viewMode={viewMode} 
@@ -224,7 +224,7 @@ const WriteEditor: React.FC<WriteEditorProps> = ({
       {isMobile && <SaveButton isSaving={isSaving} isMobile />}
       
       {/* 编辑器内容区域 */}
-      <div className="bg-card rounded-lg shadow-xl">
+      <div className="flex-1 min-h-0 bg-card rounded-lg shadow-xl">
         {renderContent()}
       </div>
 

@@ -29,28 +29,28 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ className, children, inline, ...p
     );
   }
 
-  // 如果是块级代码块，使用语法高亮
+  // 如果是块级代码块，使用语法高亮（去掉外围背景与边框）
   return (
-    <div className="my-4 rounded-md border border-border overflow-hidden">
-      <SyntaxHighlighter
-        language={language}
-        style={vscDarkPlus}
-        showLineNumbers={true}
-        customStyle={{
-          margin: 0,
-          padding: '1.25rem 1rem',
-          // 让 vscDarkPlus 主题接管背景色
-        }}
-        codeTagProps={{
-          style: {
-            fontFamily: '"Fira Code", monospace',
-            fontSize: '0.875rem'
-          }
-        }}
-      >
-        {codeContent}
-      </SyntaxHighlighter>
-    </div>
+    <SyntaxHighlighter
+      language={language}
+      style={vscDarkPlus}
+      showLineNumbers={true}
+      customStyle={{
+        margin: 0,
+        padding: 0,
+        background: 'transparent',
+      }}
+      codeTagProps={{
+        style: {
+          fontFamily: '"Fira Code", monospace',
+          fontSize: '0.875rem',
+          background: 'transparent'
+        }
+      }}
+      PreTag="pre"
+    >
+      {codeContent}
+    </SyntaxHighlighter>
   );
 };
 

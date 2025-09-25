@@ -187,7 +187,7 @@ const EditorView: React.FC<EditorViewProps> = ({
       data-editor
       onScroll={onScroll}
       onKeyDown={handleKeyDown}
-      className={`w-full p-4 border border-border rounded-lg bg-card text-foreground h-screen ${className}`}
+      className={`w-full h-full min-h-0 p-4 border border-border rounded-lg bg-card text-foreground ${className}`}
       value={content}
       onChange={onContentChange}
       placeholder={placeholder}

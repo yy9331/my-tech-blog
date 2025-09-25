@@ -42,8 +42,8 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
 
   return (
     <div className="min-h-screen bg-background pt-16">
-      <div className="max-w-7xl mx-auto">
-        <form onSubmit={handleSave}>
+      <div className="w-full px-4 md:px-6 lg:px-8">
+        <form className="h-[calc(100vh-4rem)] flex flex-col" onSubmit={handleSave}>
           <CollapsibleForm
             collapsed={collapsed}
             isEditing={isEditing}
@@ -66,7 +66,7 @@ const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
             onNewTagCreated={handleNewTagCreatedWithUpdate}
           />
           {/* markdown 编辑器内容区 */}
-          <div className="bg-card rounded-lg shadow-xl">
+          <div className="flex-1 min-h-0 bg-card rounded-lg shadow-xl">
             {children}
           </div>
         </form>

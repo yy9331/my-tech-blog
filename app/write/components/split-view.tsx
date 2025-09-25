@@ -50,8 +50,8 @@ const SplitView: React.FC<SplitViewProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <div ref={editorRef}>
+    <div className="grid grid-cols-2 gap-4 h-full min-h-0">
+      <div ref={editorRef} className="min-h-0">
         <EditorView
           content={content}
           onContentChange={onContentChange}
@@ -62,7 +62,7 @@ const SplitView: React.FC<SplitViewProps> = ({
         ref={previewRef}
         data-preview
         onScroll={onPreviewScroll}
-        className="p-4 border border-border rounded-lg bg-card text-foreground h-screen overflow-y-auto"
+        className="p-4 border border-border rounded-lg bg-card text-foreground h-full min-h-0 overflow-y-auto"
       >
         <MarkdownPreview content={content} onImageClick={onImageClick} />
       </div>
