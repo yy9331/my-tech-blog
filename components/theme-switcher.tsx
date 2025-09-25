@@ -13,16 +13,15 @@ const ThemeSwitcher = () => {
 
   useEffect(() => {
     setMounted(true);
-    // 从 localStorage 获取主题偏好
-    const savedTheme = localStorage.getItem('theme-preference') as 'light' | 'dark';
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const currentTheme = savedTheme || systemTheme;
-    
-    setTheme(currentTheme);
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    
-    // 添加调试信息
-    console.log('Theme initialized:', currentTheme);
+    try {
+      // 与 SSR 注入脚本一致的读取策略，避免首帧闪烁
+      const savedTheme = localStorage.getItem('theme-preference') as 'light' | 'dark';
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const currentTheme = savedTheme || systemTheme || 'dark';
+      setTheme(currentTheme);
+      document.documentElement.setAttribute('data-theme', currentTheme);
+      document.documentElement.classList.toggle('dark', currentTheme === 'dark');
+    } catch {}
   }, []);
 
   // 计算按钮中心点
@@ -54,6 +53,7 @@ const ThemeSwitcher = () => {
     setTheme(nextTheme);
     localStorage.setItem('theme-preference', nextTheme);
     document.documentElement.setAttribute('data-theme', nextTheme);
+    document.documentElement.classList.toggle('dark', nextTheme === 'dark');
     setAnimating(false);
   };
 

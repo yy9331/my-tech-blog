@@ -6,11 +6,13 @@ import { useAuth } from '@/lib/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { useState, useEffect } from 'react';
 import ThemeSwitcher from './theme-switcher';
-import NotificationButton from './notification-button';
+import SettingsMenu from './settings-menu';
+import { useI18n } from '@/lib/i18n';
 import { motion } from 'framer-motion';
 
 const Header = () => {
   const { isLoggedIn, setIsLoggedIn, userEmail, userName, userAvatar } = useAuth();
+  const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,47 +52,6 @@ const Header = () => {
       router.push(href);
     }
   };
-
-  // 用户信息组件
-  const UserInfo = () => (
-    <div className="flex items-center space-x-3">
-      {/* 用户头像 */}
-      {userAvatar ? (
-        <Image
-          src={userAvatar}
-          alt="用户头像"
-          width={32}
-          height={32}
-          className="rounded-full"
-        />
-      ) : (
-        <div className="w-8 h-8 bg-sky-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-          {userName ? userName.charAt(0).toUpperCase() : userEmail ? userEmail.charAt(0).toUpperCase() : 'U'}
-        </div>
-      )}
-      {/* 用户信息 */}
-      <div className="hidden sm:block text-left">
-        <div className="text-foreground text-sm font-medium">
-          {userName || userEmail}
-        </div>
-        {userName && userEmail && (
-          <div className="text-muted-foreground text-xs">
-            {userEmail}
-          </div>
-        )}
-      </div>
-      {/* 登出按钮 */}
-      <motion.button
-        onClick={handleLogout}
-        className="px-3 py-1.5 bg-transparent border border-foreground text-foreground text-sm rounded-md hover:bg-foreground hover:text-background transition-colors"
-        whileHover={{ scale: 1.10 }}
-        whileTap={{ scale: 0.96 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-      >
-        登出
-      </motion.button>
-    </div>
-  );
 
   // 导航链接组件
   const NavLink = ({ href, children }: { href: string; children: string }) => {
@@ -172,34 +133,21 @@ const Header = () => {
             <nav className="flex justify-between items-center">
               <Link href="/" className="text-2xl font-bold text-sky-400 hover:text-sky-300 transition-colors">
                 <Image
-                  src="https://oikbmogyevlxggbzfpnp.supabase.co/storage/v1/object/sign/imgs/logo-cube-horizon.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8xMjQxNTU4Ny05NWFmLTRlY2EtODYzYS1mOGVhMTYyNGM2NDYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWdzL2xvZ28tY3ViZS1ob3Jpem9uLnBuZyIsImlhdCI6MTc0OTk2NzI3NiwiZXhwIjoyNjEzODgwODc2fQ.V1dIV3ZBMsk_L76pFHi-brKlr4ViRIkq9KH9awGXijc"
-                  alt="logo"
-                  width={141}
-                  height={40}
+                  src="https://oikbmogyevlxggbzfpnp.supabase.co/storage/v1/object/public/some-imgs/pyro-wings-batch-no-bg.png"
+                  alt="My Tech Blog Logo"
+                  width={70}
+                  height={20}
                   priority
-                  style={{ display: 'block' }}
+                  style={{ display: 'block', objectFit: 'contain' }}
                 />
               </Link>
               {/* 桌面端菜单 */}
               <div className="hidden md:flex items-center space-x-6">
-                <NavLink href="/">首页</NavLink>
-                <NavLink href="/categories">分类</NavLink>
-                <NavLink href="/write">新文章</NavLink>
-                {isLoggedIn ? (
-                  <UserInfo />
-                ) : (
-                  <motion.button
-                    onClick={handleLogin}
-                    className="px-4 py-1.5 bg-sky-600 border border-sky-600 text-white text-sm rounded-md hover:bg-sky-500 transition-colors"
-                    whileHover={{ scale: 1.10 }}
-                    whileTap={{ scale: 0.96 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  >
-                    登录
-                  </motion.button>
-                )}
-                {/* 主题切换按钮 */}
-                <ThemeSwitcher />
+                <NavLink href="/">{t('nav_home')}</NavLink>
+                <NavLink href="/categories">{t('nav_categories')}</NavLink>
+                <NavLink href="/write">{t('nav_write')}</NavLink>
+                {/* 设置菜单（包含主题、语言、通知、登录登出、用户信息） */}
+                <SettingsMenu />
               </div>
               {/* 移动端三明治按钮 */}
               <motion.button className="md:hidden flex flex-col justify-center items-center w-10 h-10" onClick={() => setMenuOpen(true)} aria-label="打开菜单"
@@ -287,37 +235,21 @@ const Header = () => {
         <nav className="flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold text-sky-400 hover:text-sky-300 transition-colors">
             <Image
-              src="https://oikbmogyevlxggbzfpnp.supabase.co/storage/v1/object/sign/imgs/logo-cube-horizon.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8xMjQxNTU4Ny05NWFmLTRlY2EtODYzYS1mOGVhMTYyNGM2NDYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWdzL2xvZ28tY3ViZS1ob3Jpem9uLnBuZyIsImlhdCI6MTc0OTk2NzI3NiwiZXhwIjoyNjEzODgwODc2fQ.V1dIV3ZBMsk_L76pFHi-brKlr4ViRIkq9KH9awGXijc"
-              alt="logo"
-              width={141}
-              height={40}
+              src="https://oikbmogyevlxggbzfpnp.supabase.co/storage/v1/object/public/some-imgs/pyro-wings-batch-no-bg.png"
+              alt="My Tech Blog Logo"
+              width={70}
+              height={20}
               priority
-              style={{ display: 'block' }}
+              style={{ display: 'block', objectFit: 'contain' }}
             />
           </Link>
           {/* 桌面端菜单 */}
           <div className="hidden md:flex items-center space-x-6">
-            <NavLink href="/">首页</NavLink>
-            <NavLink href="/categories">分类</NavLink>
-            <NavLink href="/write">新文章</NavLink>
-            {isLoggedIn ? (
-              <div className="flex items-center space-x-2">
-                <NotificationButton />
-                <UserInfo />
-              </div>
-            ) : (
-              <motion.button
-                onClick={handleLogin}
-                className="px-4 py-1.5 bg-sky-600 border border-sky-600 text-white text-sm rounded-md hover:bg-sky-500 transition-colors"
-                whileHover={{ scale: 1.10 }}
-                whileTap={{ scale: 0.96 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              >
-                登录
-              </motion.button>
-            )}
-            {/* 主题切换按钮 */}
-            <ThemeSwitcher />
+            <NavLink href="/">{t('nav_home')}</NavLink>
+            <NavLink href="/categories">{t('nav_categories')}</NavLink>
+            <NavLink href="/write">{t('nav_write')}</NavLink>
+            {/* 设置菜单（包含主题、语言、通知、登录登出、用户信息） */}
+            <SettingsMenu />
           </div>
           {/* 移动端三明治按钮 */}
           <motion.button className="md:hidden flex flex-col justify-center items-center w-10 h-10" onClick={() => setMenuOpen(true)} aria-label="打开菜单"
@@ -339,9 +271,9 @@ const Header = () => {
             whileTap={{ scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
           >×</motion.button>
-          <motion.button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/')}>首页</motion.button>
-          <motion.button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/categories')}>分类</motion.button>
-          <motion.button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>新文章</motion.button>
+          <motion.button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/')}>{t('nav_home')}</motion.button>
+          <motion.button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-6 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/categories')}>{t('nav_categories')}</motion.button>
+          <motion.button className="w-3/4 py-4 text-2xl text-foreground font-bold mb-10 rounded-lg bg-sky-700 hover:bg-sky-600" onClick={() => handleMenuClick('/write')}>{t('nav_write')}</motion.button>
           {isLoggedIn ? (
             <div className="w-3/4 flex flex-col items-center space-y-4">
               {/* 移动端用户信息 */}
@@ -376,7 +308,7 @@ const Header = () => {
                 whileHover={{ scale: 1.10 }}
                 whileTap={{ scale: 0.96 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              >登出</motion.button>
+                >{t('logout')}</motion.button>
             </div>
           ) : (
             <motion.button
@@ -385,7 +317,7 @@ const Header = () => {
               whileHover={{ scale: 1.10 }}
               whileTap={{ scale: 0.96 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            >登录</motion.button>
+              >{t('login')}</motion.button>
           )}
           {/* 移动端主题切换按钮 */}
           <div className="w-3/4 mt-4 flex justify-center">

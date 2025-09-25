@@ -1,5 +1,6 @@
 'use client'
 import React, { useRef, useCallback } from 'react';
+import { useI18n } from '@/lib/i18n';
 
 interface EditorViewProps {
   content: string;
@@ -17,6 +18,7 @@ const EditorView: React.FC<EditorViewProps> = ({
   placeholder = '请输入正文...'
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { t } = useI18n();
 
   // 处理键盘事件，实现代码块快捷输入和快捷包裹
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -190,7 +192,7 @@ const EditorView: React.FC<EditorViewProps> = ({
       className={`w-full h-full min-h-0 p-4 border border-border rounded-lg bg-card text-foreground ${className}`}
       value={content}
       onChange={onContentChange}
-      placeholder={placeholder}
+      placeholder={placeholder || t('editor_placeholder')}
     />
   );
 };

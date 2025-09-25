@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useI18n } from '@/lib/i18n';
 
 export type SortOption = 'date-desc' | 'date-asc' | 'lastModified';
 
@@ -10,15 +11,16 @@ interface PostSortProps {
 }
 
 export default function PostSort({ currentSort, onSortChange }: PostSortProps) {
+  const { t } = useI18n();
   const sortOptions = [
-    { value: 'date-desc', label: '最新发布' },
-    { value: 'date-asc', label: '最早发布' },
-    { value: 'lastModified', label: '最近修改' },
+    { value: 'date-desc', label: t('sort_latest') },
+    { value: 'date-asc', label: t('sort_earliest') },
+    { value: 'lastModified', label: t('sort_modified') },
   ] as const;
 
   return (
     <div className="flex items-center gap-2 mb-6">
-      <span className="text-sm text-muted-foreground">排序方式：</span>
+      <span className="text-sm text-muted-foreground">{t('sort_title')}</span>
       <div className="flex gap-2">
         {sortOptions.map((option) => (
           <motion.button

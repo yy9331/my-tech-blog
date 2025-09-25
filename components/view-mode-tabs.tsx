@@ -1,5 +1,6 @@
 'use client'
 import React from 'react';
+import { useI18n } from '@/lib/i18n';
 
 export type ViewMode = 'preview' | 'split' | 'save-and-preview';
 
@@ -11,6 +12,7 @@ interface ViewModeTabsProps {
 }
 
 const ViewModeTabs: React.FC<ViewModeTabsProps> = ({ viewMode, onViewModeChange, onPreviewPage, isEditing = false }) => {
+  const { t } = useI18n();
   const modes: ViewMode[] = isEditing ? ['preview', 'split', 'save-and-preview'] : ['preview', 'split'];
   
   const handleModeClick = (mode: ViewMode) => {
@@ -24,11 +26,11 @@ const ViewModeTabs: React.FC<ViewModeTabsProps> = ({ viewMode, onViewModeChange,
   const getModeLabel = (mode: ViewMode) => {
     switch (mode) {
       case 'preview':
-        return 'Preview';
+        return t('tabs_preview');
       case 'split':
-        return 'Split';
+        return t('tabs_split');
       case 'save-and-preview':
-        return 'Save and Preview';
+        return t('tabs_save_and_preview');
     }
   };
   

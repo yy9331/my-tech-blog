@@ -1,9 +1,11 @@
 'use client'
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useI18n } from '@/lib/i18n';
 
 const Footer = () => {
   const pathname = usePathname();
+  const { t } = useI18n();
   
   // 检查是否在 write 页面，如果是则隐藏 footer
   const isWritePage = pathname === '/write' || pathname.startsWith('/write?');
@@ -17,36 +19,36 @@ const Footer = () => {
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-sky-400 text-lg font-semibold mb-4">关于我们</h3>
+            <h3 className="text-sky-400 text-lg font-semibold mb-4">{t('footer_about')}</h3>
             <p className="text-sm">
-              分享技术见解，记录学习历程，探讨编程之道。
+              {t('footer_desc')}
             </p>
           </div>
           <div>
-            <h3 className="text-sky-400 text-lg font-semibold mb-4">快速链接</h3>
+            <h3 className="text-sky-400 text-lg font-semibold mb-4">{t('footer_quicklinks')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="hover:text-sky-400 transition-colors">
-                  首页
+                  {t('nav_home')}
                 </Link>
               </li>
               <li>
                 <Link href="/categories" className="hover:text-sky-400 transition-colors">
-                  分类
+                  {t('nav_categories')}
                 </Link>
               </li>
               <li>
                 <Link href="/write" className="hover:text-sky-400 transition-colors">
-                  新文章
+                  {t('nav_write')}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-sky-400 text-lg font-semibold mb-4">联系方式</h3>
+            <h3 className="text-sky-400 text-lg font-semibold mb-4">{t('footer_contact')}</h3>
             <ul className="space-y-2 text-sm">
-              <li>邮箱：yuyi.gz@163.com; yuyigz@gmail.com</li>
-              <li>GitHub：github.com/yy9331</li>
+              <li>{t('email')}：yuyi.gz@163.com; yuyigz@gmail.com</li>
+              <li>{t('github')}：github.com/yy9331</li>
             </ul>
           </div>
         </div>
