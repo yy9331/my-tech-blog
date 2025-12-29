@@ -7,10 +7,10 @@ import { useTags } from '@/lib/hooks/use-tags';
 import CollapsibleForm from './components/collapsible-form';
 
 type WriteLayoutProps = {
-  children: React.ReactElement;
+  children: React.ReactNode;
 }
 
-const WriteLayoutContent = ({ children }: { children: React.ReactElement }) => {
+const WriteLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const [collapsed, setCollapsed] = useState(true);
   const { content, setContent, setIsSaving } = useEditor();
   const searchParams = useSearchParams();
